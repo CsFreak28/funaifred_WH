@@ -7,7 +7,33 @@ app.get("/", async (request: Request, response: Response) => {
   response.status(200);
   response.send("i am connected");
 });
+app.get("/webhook", (request: Request, response: Response) => {
+  /**
+   * UPDATE YOUR VERIFY TOKEN
+   *This will be the Verify Token value when you set up webhook
+   **/
+  const verify_token = process.env.VERIFY_TOKEN;
+
+  // Parse params from the webhook verification request
+  let mode = request.query["hub.mode"];
+  let token = request.query["hub.verify_token"];
+  let challenge = request.query["hub.challenge"];
+  console.log(token);
+  // Check if a token and mode were sent
+  if (mode && token) {
+    // Check the mode and token sent are correct
+    if (mode === "subscribe" && token === verify_token) {
+      // Respond with 200 OK and challenge token from the request
+      console.log("WEBHOOK_VERIFIED");
+      response.status(200).send(challenge);
+    } else {
+      // Responds with '403 Forbidden' if verify tokens do not match
+      response.sendStatus(403);
+    }
+  } else {
+    response.sendStatus(404);
+  }
+});
 app.listen(port || 8000, () => {
-  console.log("i am listening bro", port);
-  console.log("samson");
+  console.log("i am listening bro ⚡ on", port);
 });

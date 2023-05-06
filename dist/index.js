@@ -18,4 +18,5 @@ app.get("/", (request, response) => __awaiter(void 0, void 0, void 0, function* 
 }));
 app.listen(port || 8000, () => {
     console.log("i am listening bro", port);
+    console.log("samson");
 });

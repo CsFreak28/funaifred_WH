@@ -6,7 +6,7 @@
   "type": "module",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "nodemon ./dist/index.js",
+    "build": "node ./dist/index.js",
     "start": "tsc --watch"
   },
   "keywords": [],

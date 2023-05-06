@@ -9,4 +9,5 @@ app.get("/", async (request: Request, response: Response) => {
 });
 app.listen(port || 8000, () => {
   console.log("i am listening bro", port);
+  console.log("samson");
 });

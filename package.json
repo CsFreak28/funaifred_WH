@@ -1,0 +1,27 @@
+{
+  "name": "funaifred_wh",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "nodemon ./dist/index.js",
+    "start": "tsc --watch"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@types/express": "^4.17.17",
+    "@types/firebase": "^3.2.1",
+    "@types/node": "^20.1.0",
+    "nodemon": "^2.0.22",
+    "typescript": "^5.0.4"
+  },
+  "dependencies": {
+    "dotenv": "^16.0.3",
+    "express": "^4.18.2",
+    "firebase": "^9.21.0"
+  }
+}

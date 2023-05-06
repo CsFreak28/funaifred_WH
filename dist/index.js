@@ -12,6 +12,8 @@ import dotenv from "dotenv";
 dotenv.config();
 const app = express();
 let port = process.env.PORT;
+//create a local store of all conversations
+const conversations = [];
 app.get("/", (request, response) => __awaiter(void 0, void 0, void 0, function* () {
     response.status(200);
     response.send("i am connected");
@@ -41,6 +43,40 @@ app.get("/webhook", (request, response) => {
         }
     }
     else {
+        response.sendStatus(404);
+    }
+});
+app.post("/webhook", (request, response) => {
+    console.log("this is the reque");
+    // Parse the request body from the POST
+    let body = request.body;
+    // Check the Incoming webhook message
+    // info on WhatsApp text message payload: https://developers.facebook.com/docs/whatsapp/cloud-api/webhooks/payload-examples#text-messages
+    if (request.body.object) {
+        if (request.body.entry &&
+            request.body.entry[0].changes &&
+            request.body.entry[0].changes[0] &&
+            request.body.entry[0].changes[0].value.messages &&
+            request.body.entry[0].changes[0].value.messages[0]) {
+            let messageType = request.body.entry[0].changes[0].value.messages[0].type;
+            console.log(messageType);
+            let phoneNumber = request.body.entry[0].changes[0].value.messages[0].from;
+            if (messageType === "text") {
+                // extract the message text from the webhook payload
+                let recievedText = request.body.entry[0].changes[0].value.messages[0].text.body;
+                console.log(recievedText);
+                if (recievedText == "hello" || recievedText == "Hello") {
+                }
+            }
+            else if (messageType === "interactive") {
+            }
+            else if (messageType == "button") {
+            }
+        }
+        response.sendStatus(200);
+    }
+    else {
+        // Return a '404 Not Found' if event is not from a WhatsApp API
         response.sendStatus(404);
     }
 });

@@ -18,6 +18,7 @@ app.use(
   })
 );
 let port = process.env.PORT;
+console.log("statr");
 // create a local store of all conversations
 let conversations: conversations = {};
 const chatBot = new ChatBot();

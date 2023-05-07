@@ -19,12 +19,11 @@ app.get("/webhook", (request: Request, response: Response) => {
    *This will be the Verify Token value when you set up webhook
    **/
   const verify_token = process.env.VERIFY_TOKEN;
-
   // Parse params from the webhook verification request
   let mode = request.query["hub.mode"];
   let token = request.query["hub.verify_token"];
   let challenge = request.query["hub.challenge"];
-  console.log(token);
+  console.log("john");
   // Check if a token and mode were sent
   if (mode && token) {
     // Check the mode and token sent are correct

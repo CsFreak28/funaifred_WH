@@ -1,7 +1,7 @@
 import express, { Express, Request, Response } from "express";
 import dotenv from "dotenv";
 import { textIsAGreeting } from "./helperFunctions.js";
-import bodyParser from "body-parser";
+import bodyParser, { text } from "body-parser";
 import replySentenceWithText from "./sendMessage.js";
 dotenv.config();
 const app: Express = express();
@@ -50,7 +50,6 @@ app.post("/webhook", (request: Request, response: Response) => {
   console.log("hiii");
   // Parse the request body from the POST
   let body = request.body;
-  console.log(body);
   // Check the Incoming webhook message
   // info on WhatsApp text message payload: https://developers.facebook.com/docs/whatsapp/cloud-api/webhooks/payload-examples#text-messages
   if (request.body.object) {
@@ -62,17 +61,16 @@ app.post("/webhook", (request: Request, response: Response) => {
       request.body.entry[0].changes[0].value.messages[0]
     ) {
       let messageType = request.body.entry[0].changes[0].value.messages[0].type;
-      console.log(messageType);
+      console.log("this is the message type", messageType);
       if (messageType === "text") {
         // extract the message text from the webhook payload
-        let recievedText: string =
+        let usersText: string =
           request.body.entry[0].changes[0].value.messages[0].text.body;
-        console.log(recievedText);
-        if (recievedText == "hello" || recievedText == "Hello") {
-          console.log("he sent a hello");
+        console.log(usersText);
+        if (textIsAGreeting(usersText)) {
           replySentenceWithText(request, {
             contextId: "",
-            noReply: true,
+            // noReply: true,
             message: "welcome to my world",
           });
         }

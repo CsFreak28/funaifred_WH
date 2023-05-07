@@ -17,6 +17,7 @@ let port = process.env.PORT;
 const conversations = [];
 console.log("connecticut");
 app.get("/", (request, response) => __awaiter(void 0, void 0, void 0, function* () {
+    console.log("superman");
     response.status(200);
     response.send("i am connected");
 }));

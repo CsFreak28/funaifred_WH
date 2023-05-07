@@ -9,6 +9,7 @@ let port = process.env.PORT;
 const conversations = [];
 console.log("connecticut");
 app.get("/", async (request: Request, response: Response) => {
+  console.log("superman");
   response.status(200);
   response.send("i am connected");
 });

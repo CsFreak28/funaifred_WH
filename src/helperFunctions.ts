@@ -32,7 +32,7 @@ export function textIsAGreeting(text: string): boolean {
       }
     })
     .catch((e) => {
-      console.log("there was an error when processing request", e.status);
+      console.log("there was an error here", e.status);
     });
   return textIsAGreeting;
 }

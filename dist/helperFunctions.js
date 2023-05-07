@@ -2,10 +2,10 @@ import { Configuration, OpenAIApi } from "openai";
 //setup openai configuration
 export function textIsAGreeting(text) {
     let usrsText = "No";
-    console.log(process.env.OPENAI_API_KEY);
+    let apiKey = "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";
     let textIsAGreeting = false;
     const openai = new OpenAIApi(new Configuration({
-        apiKey: process.env.OPENAI_API_KEY,
+        apiKey: apiKey,
     }));
     openai
         .createChatCompletion({
@@ -29,7 +29,7 @@ export function textIsAGreeting(text) {
         }
     })
         .catch((e) => {
-        console.log("there was an error when processing request", e.status);
+        console.log("there was an error here", e.status);
     });
     return textIsAGreeting;
 }

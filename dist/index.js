@@ -63,7 +63,6 @@ app.post("/webhook", (request, response) => {
             request.body.entry[0].changes[0].value.messages[0]) {
             let messageType = request.body.entry[0].changes[0].value.messages[0].type;
             console.log(messageType);
-            let phoneNumber = request.body.entry[0].changes[0].value.messages[0].from;
             if (messageType === "text") {
                 // extract the message text from the webhook payload
                 let recievedText = request.body.entry[0].changes[0].value.messages[0].text.body;

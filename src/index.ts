@@ -1,9 +1,16 @@
 import express, { Express, Request, Response } from "express";
 import dotenv from "dotenv";
 import { textIsAGreeting } from "./helperFunctions.js";
+import bodyParser from "body-parser";
 import replySentenceWithText from "./sendMessage.js";
 dotenv.config();
 const app: Express = express();
+app.use(bodyParser.json());
+app.use(
+  bodyParser.urlencoded({
+    extended: true,
+  })
+);
 let port = process.env.PORT;
 //create a local store of all conversations
 const conversations = [];

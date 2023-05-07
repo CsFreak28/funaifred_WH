@@ -14,9 +14,9 @@ interface StudentProfile {
 }
 
 export interface reply {
-  contextId: string | undefined;
+  contextId?: string;
   message: string | Array<string>;
-  noReply: boolean;
+  // noReply: boolean; //
 }
 export interface message {
   text: string;

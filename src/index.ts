@@ -1,5 +1,6 @@
 import express, { Express, Request, Response } from "express";
 import dotenv from "dotenv";
+import { textIsAGreeting } from "./helperFunctions.js";
 dotenv.config();
 const app: Express = express();
 let port = process.env.PORT;
@@ -37,7 +38,6 @@ app.get("/webhook", (request: Request, response: Response) => {
   }
 });
 app.post("/webhook", (request: Request, response: Response) => {
-  console.log("this is the reque");
   // Parse the request body from the POST
   let body = request.body;
   // Check the Incoming webhook message

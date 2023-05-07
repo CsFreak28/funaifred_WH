@@ -47,7 +47,6 @@ app.get("/webhook", (request, response) => {
     }
 });
 app.post("/webhook", (request, response) => {
-    console.log("this is the reque");
     // Parse the request body from the POST
     let body = request.body;
     // Check the Incoming webhook message
@@ -66,6 +65,7 @@ app.post("/webhook", (request, response) => {
                 let recievedText = request.body.entry[0].changes[0].value.messages[0].text.body;
                 console.log(recievedText);
                 if (recievedText == "hello" || recievedText == "Hello") {
+                    console.log("he sent a hello");
                 }
             }
             else if (messageType === "interactive") {

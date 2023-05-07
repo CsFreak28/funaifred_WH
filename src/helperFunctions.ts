@@ -26,12 +26,13 @@ export function textIsAGreeting(text: string): boolean {
         usrsText = res.data.choices[0].message?.content;
         if (usrsText == "Yes.") {
           textIsAGreeting = true;
+          console.log(usrsText);
         }
         // msgToSend = res.data.choices[0].message.content;
       }
     })
     .catch((e) => {
-      console.log("there was an error when processing request", e);
+      console.log("there was an error when processing request", e.status);
     });
   return textIsAGreeting;
 }

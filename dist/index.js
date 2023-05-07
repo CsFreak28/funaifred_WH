@@ -20,6 +20,7 @@ app.use(bodyParser.urlencoded({
     extended: true,
 }));
 let port = process.env.PORT;
+console.log("statr");
 // create a local store of all conversations
 let conversations = {};
 const chatBot = new ChatBot();
@@ -85,7 +86,7 @@ app.post("/webhook", (request, response) => __awaiter(void 0, void 0, void 0, fu
                     ? yield userExistsInDB(phoneNumber)
                     : usersConversation;
                 //if usersDBRecord doesn't exist and users local conversation isn't available then user isnt recognized as a student
-                console.log(usersDBRecord);
+                console.log("this is the data", usersDBRecord);
                 const usrMsgData = {
                     usrSentence: usersText,
                     usrSentenceID: msgID,
@@ -94,7 +95,8 @@ app.post("/webhook", (request, response) => __awaiter(void 0, void 0, void 0, fu
                 if (usersDBRecord === undefined) {
                     chatBot.processKeyword("userDoesntExist", usrMsgData);
                 }
-                else if (yield textIsAGreeting(usersText)) {
+                else if (usersDBRecord !== undefined &&
+                    (yield textIsAGreeting(usersText))) {
                     // replySentenceWithText(request, {
                     //   contextId: "",
                     // message: "welcome to my world",

@@ -88,7 +88,7 @@ app.post("/webhook", async (request: Request, response: Response) => {
             ? await userExistsInDB(phoneNumber)
             : usersConversation;
         //if usersDBRecord doesn't exist and users local conversation isn't available then user isnt recognized as a student
-        console.log(usersDBRecord);
+        console.log("this is the data", usersDBRecord);
         const usrMsgData: usersMsgData = {
           usrSentence: usersText,
           usrSentenceID: msgID,

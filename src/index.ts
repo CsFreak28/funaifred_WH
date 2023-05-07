@@ -59,6 +59,7 @@ app.post("/webhook", (request: Request, response: Response) => {
           request.body.entry[0].changes[0].value.messages[0].text.body;
         console.log(recievedText);
         if (recievedText == "hello" || recievedText == "Hello") {
+          console.log("he sent a hello");
         }
       } else if (messageType === "interactive") {
       } else if (messageType == "button") {

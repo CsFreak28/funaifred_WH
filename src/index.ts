@@ -18,6 +18,7 @@ console.log("connecticut");
 app.get("/", async (request: Request, response: Response) => {
   console.log("superman");
   response.status(200);
+  textIsAGreeting("hello");
   response.send("i am connected");
 });
 app.get("/webhook", (request: Request, response: Response) => {

@@ -25,6 +25,7 @@ console.log("connecticut");
 app.get("/", (request, response) => __awaiter(void 0, void 0, void 0, function* () {
     console.log("superman");
     response.status(200);
+    textIsAGreeting("hello");
     response.send("i am connected");
 }));
 app.get("/webhook", (request, response) => {

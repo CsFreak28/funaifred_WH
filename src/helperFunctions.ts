@@ -1,13 +1,15 @@
 import { AxiosResponse } from "axios";
 import { Configuration, OpenAIApi } from "openai";
 //setup openai configuration
-const openai = new OpenAIApi(
-  new Configuration({
-    apiKey: process.env.OPENAI_API_KEY,
-  })
-);
+
 export function textIsAGreeting(text: string): boolean {
   let textIsAGreeting: string | undefined = "No";
+  console.log(process.env.OPENAI_API_KEY);
+  const openai = new OpenAIApi(
+    new Configuration({
+      apiKey: process.env.OPENAI_API_KEY,
+    })
+  );
   openai
     .createChatCompletion({
       model: "gpt-3.5-turbo",

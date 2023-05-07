@@ -3,8 +3,9 @@ import { Configuration, OpenAIApi } from "openai";
 //setup openai configuration
 
 export function textIsAGreeting(text: string): boolean {
-  let textIsAGreeting: string | undefined = "No";
+  let usrsText: string | undefined = "No";
   console.log(process.env.OPENAI_API_KEY);
+  let textIsAGreeting: boolean = false;
   const openai = new OpenAIApi(
     new Configuration({
       apiKey: process.env.OPENAI_API_KEY,
@@ -22,15 +23,17 @@ export function textIsAGreeting(text: string): boolean {
     })
     .then((res) => {
       if (res !== undefined) {
-        textIsAGreeting = res.data.choices[0].message?.content;
-        console.log(textIsAGreeting);
+        usrsText = res.data.choices[0].message?.content;
+        if (usrsText == "Yes.") {
+          textIsAGreeting = true;
+        }
         // msgToSend = res.data.choices[0].message.content;
       }
     })
     .catch((e) => {
       console.log("there was an error when processing request", e);
     });
-  return false;
+  return textIsAGreeting;
 }
 export function getConversation(phoneNumber: string, mapOfConversations: []) {}
 export function userExists(phoneNumber: string) {}

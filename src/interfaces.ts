@@ -38,10 +38,14 @@ export interface sentenceInterface {
 export interface usersMsgData {
   usrSentence: string;
   usrSentenceID: string | undefined;
+  sentenceUsrIsReplyingID?: string;
 }
 export interface conversation {
   timeOfInteraction: string;
   lastBotSentence: sentenceInterface;
   lastChat: string;
   previousSentences: Array<sentenceInterface> | null;
+}
+export interface conversations {
+  [key: string]: conversation;
 }

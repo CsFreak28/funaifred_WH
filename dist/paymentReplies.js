@@ -1,8 +1,8 @@
 const messages = [];
 export const paymentReplies = {
-    payments: (sentenceMessage) => {
+    payments: (usersMsgData) => {
         let reply = {
-            contextId: sentenceMessage.msgId,
+            contextId: usersMsgData.sentenceUsrIsReplyingID,
             message: "payment about to be made",
         };
         return reply;

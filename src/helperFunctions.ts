@@ -1,5 +1,6 @@
 import { AxiosResponse } from "axios";
 import { Configuration, OpenAIApi } from "openai";
+import { conversation, conversations } from "./interfaces.js";
 //setup openai configuration
 
 export async function textIsAGreeting(text: string): Promise<boolean> {
@@ -39,4 +40,10 @@ export async function textIsAGreeting(text: string): Promise<boolean> {
   return textIsAGreeting;
 }
 export function getConversation(phoneNumber: string, mapOfConversations: []) {}
-export function userExists(phoneNumber: string) {}
+export function userExistsInLocalConversations(
+  phoneNumber: string,
+  conversations: conversations
+): conversation | undefined {
+  let usersConversation = conversations[phoneNumber];
+  return usersConversation;
+}

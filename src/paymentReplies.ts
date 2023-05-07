@@ -1,9 +1,14 @@
-import { reply, conversation, sentenceInterface } from "./interfaces.js";
+import {
+  reply,
+  conversation,
+  sentenceInterface,
+  usersMsgData,
+} from "./interfaces.js";
 const messages = [];
 export const paymentReplies = {
-  payments: (sentenceMessage: sentenceInterface) => {
+  payments: (usersMsgData: usersMsgData) => {
     let reply: reply = {
-      contextId: sentenceMessage.msgId,
+      contextId: usersMsgData.sentenceUsrIsReplyingID,
       message: "payment about to be made",
     };
     return reply;

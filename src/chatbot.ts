@@ -5,33 +5,33 @@ import {
   option,
   usersMsgData,
 } from "./interfaces.js";
+import { noExistuserReplies } from "./noExistUser.js";
 import { paymentReplies } from "./paymentReplies.js";
 import replySentenceWithText from "./sendMessage.js";
 import { Request } from "express";
-class ChatBot {
+export default class ChatBot {
   chatBotFunctions: {
-    [name: string]: (conversationData: sentenceInterface) => reply;
+    [name: string]: (conversationData: usersMsgData) => reply;
   };
   constructor() {
     this.chatBotFunctions = {
       //add the replies of different categories
       ...paymentReplies,
+      ...noExistuserReplies,
     };
   }
-  processKeyword = (message: string, usrSentence: sentenceInterface) => {
+  processKeyword = (message: string, usrsMessage: usersMsgData) => {
     //use chatgpt to clean the message and find out it's category, that message belongs to
     let cleanedMessage = message;
     //get the reply of processing the users message
     let resolve: undefined | reply =
-      this.chatBotFunctions[cleanedMessage](usrSentence);
+      this.chatBotFunctions[cleanedMessage](usrsMessage);
     if (resolve === undefined) {
       let noReply: reply = {
         message: [
           "I don't quite understand what you want me to do exactly",
           "did you mean",
         ],
-        // noReply: true,
-        contextId: "",
       };
       return noReply;
     } else {

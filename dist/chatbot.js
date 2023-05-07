@@ -1,20 +1,19 @@
+import { noExistuserReplies } from "./noExistUser.js";
 import { paymentReplies } from "./paymentReplies.js";
 import replySentenceWithText from "./sendMessage.js";
-class ChatBot {
+export default class ChatBot {
     constructor() {
-        this.processKeyword = (message, usrSentence) => {
+        this.processKeyword = (message, usrsMessage) => {
             //use chatgpt to clean the message and find out it's category, that message belongs to
             let cleanedMessage = message;
             //get the reply of processing the users message
-            let resolve = this.chatBotFunctions[cleanedMessage](usrSentence);
+            let resolve = this.chatBotFunctions[cleanedMessage](usrsMessage);
             if (resolve === undefined) {
                 let noReply = {
                     message: [
                         "I don't quite understand what you want me to do exactly",
                         "did you mean",
                     ],
-                    // noReply: true,
-                    contextId: "",
                 };
                 return noReply;
             }
@@ -52,6 +51,6 @@ class ChatBot {
                 return selectedOption;
             }
         };
-        this.chatBotFunctions = Object.assign({}, paymentReplies);
+        this.chatBotFunctions = Object.assign(Object.assign({}, paymentReplies), noExistuserReplies);
     }
 }

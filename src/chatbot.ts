@@ -30,7 +30,7 @@ class ChatBot {
           "I don't quite understand what you want me to do exactly",
           "did you mean",
         ],
-        noReply: true,
+        // noReply: true,
         contextId: "",
       };
       return noReply;

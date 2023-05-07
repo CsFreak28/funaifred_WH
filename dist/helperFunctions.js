@@ -5,7 +5,7 @@ export function textIsAGreeting(text) {
     let apiKey = "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";
     let textIsAGreeting = false;
     const openai = new OpenAIApi(new Configuration({
-        apiKey: apiKey,
+        apiKey: "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",
     }));
     openai
         .createChatCompletion({

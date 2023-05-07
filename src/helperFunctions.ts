@@ -8,7 +8,7 @@ export function textIsAGreeting(text: string): boolean {
   let textIsAGreeting: boolean = false;
   const openai = new OpenAIApi(
     new Configuration({
-      apiKey: apiKey,
+      apiKey: "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",
     })
   );
   openai

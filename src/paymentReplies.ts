@@ -5,7 +5,6 @@ export const paymentReplies = {
     let reply: reply = {
       contextId: sentenceMessage.msgId,
       message: "payment about to be made",
-      noReply: false,
     };
     return reply;
   },

@@ -12,7 +12,6 @@ const token = process.env.WHATSAPP_TOKEN;
 export default function replySentenceWithText(req, reply) {
     return __awaiter(this, void 0, void 0, function* () {
         let phone_number_id = req.body.entry[0].changes[0].value.metadata.phone_number_id;
-        let msgID = req.body.entry[0].changes[0].value.messages[0].id;
         let from = req.body.entry[0].changes[0].value.messages[0].from; // extract the phone number from the webhook payload
         let response = yield axios({
             method: "POST",

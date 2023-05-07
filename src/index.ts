@@ -47,7 +47,7 @@ app.get("/webhook", (request: Request, response: Response) => {
     response.sendStatus(404);
   }
 });
-app.post("/webhook", (request: Request, response: Response) => {
+app.post("/webhook", async (request: Request, response: Response) => {
   console.log("hiii");
   // Parse the request body from the POST
   let body = request.body;
@@ -68,7 +68,7 @@ app.post("/webhook", (request: Request, response: Response) => {
         let usersText: string =
           request.body.entry[0].changes[0].value.messages[0].text.body;
         console.log(usersText);
-        if (textIsAGreeting(usersText)) {
+        if (await textIsAGreeting(usersText)) {
           replySentenceWithText(request, {
             contextId: "",
             // noReply: true,

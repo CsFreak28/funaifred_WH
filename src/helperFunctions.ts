@@ -26,7 +26,7 @@ export function textIsAGreeting(text: string): boolean {
       }
     })
     .catch((e) => {
-      console.log("there was an error when processing request");
+      console.log("there was an error when processing request", e);
     });
   return false;
 }

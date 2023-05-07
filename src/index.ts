@@ -43,6 +43,7 @@ app.post("/webhook", (request: Request, response: Response) => {
   console.log("hiii");
   // Parse the request body from the POST
   let body = request.body;
+  console.log(body);
   // Check the Incoming webhook message
   // info on WhatsApp text message payload: https://developers.facebook.com/docs/whatsapp/cloud-api/webhooks/payload-examples#text-messages
   if (request.body.object) {

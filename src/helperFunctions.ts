@@ -4,11 +4,11 @@ import { Configuration, OpenAIApi } from "openai";
 
 export function textIsAGreeting(text: string): boolean {
   let usrsText: string | undefined = "No";
-  console.log(process.env.OPENAI_API_KEY);
+  let apiKey = "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";
   let textIsAGreeting: boolean = false;
   const openai = new OpenAIApi(
     new Configuration({
-      apiKey: process.env.OPENAI_API_KEY,
+      apiKey: apiKey,
     })
   );
   openai

@@ -96,7 +96,10 @@ app.post("/webhook", async (request: Request, response: Response) => {
         };
         if (usersDBRecord === undefined) {
           chatBot.processKeyword("userDoesntExist", usrMsgData);
-        } else if (await textIsAGreeting(usersText)) {
+        } else if (
+          usersDBRecord !== undefined &&
+          (await textIsAGreeting(usersText))
+        ) {
           // replySentenceWithText(request, {
           //   contextId: "",
           // message: "welcome to my world",

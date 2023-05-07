@@ -47,6 +47,7 @@ app.get("/webhook", (request, response) => {
     }
 });
 app.post("/webhook", (request, response) => {
+    console.log("hiii");
     // Parse the request body from the POST
     let body = request.body;
     // Check the Incoming webhook message

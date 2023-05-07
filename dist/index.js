@@ -9,11 +9,13 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 import express from "express";
 import dotenv from "dotenv";
+import replySentenceWithText from "./sendMessage.js";
 dotenv.config();
 const app = express();
 let port = process.env.PORT;
 //create a local store of all conversations
 const conversations = [];
+console.log("connecticut");
 app.get("/", (request, response) => __awaiter(void 0, void 0, void 0, function* () {
     response.status(200);
     response.send("i am connected");
@@ -67,6 +69,11 @@ app.post("/webhook", (request, response) => {
                 console.log(recievedText);
                 if (recievedText == "hello" || recievedText == "Hello") {
                     console.log("he sent a hello");
+                    replySentenceWithText(request, {
+                        contextId: "",
+                        noReply: true,
+                        message: "welcome to my world",
+                    });
                 }
             }
             else if (messageType === "interactive") {

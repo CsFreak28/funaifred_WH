@@ -2,10 +2,11 @@ import { Configuration, OpenAIApi } from "openai";
 //setup openai configuration
 export function textIsAGreeting(text) {
     let usrsText = "No";
-    let apiKey = "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";
+    let apiKey = process.env.OPENAI_API_KEY;
+    console.log(apiKey);
     let textIsAGreeting = false;
     const openai = new OpenAIApi(new Configuration({
-        apiKey: "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",
+        apiKey: apiKey,
     }));
     openai
         .createChatCompletion({

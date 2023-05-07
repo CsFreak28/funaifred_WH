@@ -56,7 +56,7 @@ app.get("/webhook", (request, response) => {
         response.sendStatus(404);
     }
 });
-app.post("/webhook", (request, response) => {
+app.post("/webhook", (request, response) => __awaiter(void 0, void 0, void 0, function* () {
     console.log("hiii");
     // Parse the request body from the POST
     let body = request.body;
@@ -74,7 +74,7 @@ app.post("/webhook", (request, response) => {
                 // extract the message text from the webhook payload
                 let usersText = request.body.entry[0].changes[0].value.messages[0].text.body;
                 console.log(usersText);
-                if (textIsAGreeting(usersText)) {
+                if (yield textIsAGreeting(usersText)) {
                     replySentenceWithText(request, {
                         contextId: "",
                         // noReply: true,
@@ -93,7 +93,7 @@ app.post("/webhook", (request, response) => {
         // Return a '404 Not Found' if event is not from a WhatsApp API
         response.sendStatus(404);
     }
-});
+}));
 app.listen(port || 8000, () => {
     console.log("i am listening bro ⚡ on", port);
 });

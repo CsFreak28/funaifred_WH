@@ -2,7 +2,7 @@ import { AxiosResponse } from "axios";
 import { Configuration, OpenAIApi } from "openai";
 //setup openai configuration
 
-export function textIsAGreeting(text: string): boolean {
+export async function textIsAGreeting(text: string): Promise<boolean> {
   let usrsText: string | undefined = "No";
   let apiKey = process.env.OPENAI_API_KEY;
   console.log(apiKey);
@@ -12,7 +12,7 @@ export function textIsAGreeting(text: string): boolean {
       apiKey: apiKey,
     })
   );
-  openai
+  await openai
     .createChatCompletion({
       model: "gpt-3.5-turbo",
       messages: [
@@ -35,6 +35,7 @@ export function textIsAGreeting(text: string): boolean {
     .catch((e) => {
       console.log("there was an error here", e.status);
     });
+  console.log(textIsAGreeting);
   return textIsAGreeting;
 }
 export function getConversation(phoneNumber: string, mapOfConversations: []) {}

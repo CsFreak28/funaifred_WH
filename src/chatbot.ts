@@ -58,13 +58,13 @@ export default class ChatBot {
     conversation: conversation | DocumentData,
     usersMsgData: usersMsgData
   ) => {
-    if (usersMsgData.usrSentenceID) {
+    if (usersMsgData.sentenceUsrIsReplyingID) {
       //if the user's message has an id, check which sentence he was replying to
       let previousSentences = conversation.previousSentences;
       let sentenceUserReplied: sentenceInterface | undefined;
       let selectedOption: string | undefined | { replyTo: string };
       previousSentences?.forEach((sentence: sentenceInterface) => {
-        sentence.msgId === usersMsgData.usrSentenceID &&
+        sentence.msgId === usersMsgData.sentenceUsrIsReplyingID &&
           (sentenceUserReplied = sentence);
       });
       if (sentenceUserReplied) {

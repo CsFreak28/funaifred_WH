@@ -39,27 +39,32 @@ export default function replySentenceWithText(request, reply) {
         }
         else if (typeof reply.message === "object") {
             reply.message.forEach((message) => __awaiter(this, void 0, void 0, function* () {
-                yield axios({
-                    method: "POST",
-                    url: "https://graph.facebook.com/v15.0/" + phone_number_id + "/messages",
-                    data: {
-                        messaging_product: "whatsapp",
-                        context: reply.contextId
-                            ? {
-                                message_id: reply.contextId,
-                            }
-                            : undefined,
-                        to: from,
-                        text: { body: `${message}` },
-                    },
-                    headers: {
-                        "Content-Type": "application/json",
-                        Authorization: `Bearer ${token}`,
-                    },
-                }).catch(() => {
-                    console.log(token);
-                    console.log("error replying with text");
-                });
+                if (typeof message !== "object") {
+                    yield axios({
+                        method: "POST",
+                        url: "https://graph.facebook.com/v15.0/" + phone_number_id + "/messages",
+                        data: {
+                            messaging_product: "whatsapp",
+                            context: reply.contextId
+                                ? {
+                                    message_id: reply.contextId,
+                                }
+                                : undefined,
+                            to: from,
+                            text: { body: `${message}` },
+                        },
+                        headers: {
+                            "Content-Type": "application/json",
+                            Authorization: `Bearer ${token}`,
+                        },
+                    }).catch(() => {
+                        console.log(token);
+                        console.log("error replying with text");
+                    });
+                }
+                else if (message.typeOfReply === "interactive") {
+                    replySentenceWithInteractive(request, message);
+                }
             }));
         }
         return response;

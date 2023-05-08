@@ -21,12 +21,16 @@ export const startAndEndReplies = {
             message: [
                 "Hey there",
                 {
-                    message: "",
+                    message: "Are you a student of FUNAI?",
                     typeOfReply: "interactive",
                     options: {
                         firstButtonText: {
-                            message: "",
-                            id: "",
+                            message: "Yes",
+                            id: "110",
+                        },
+                        secondButtonText: {
+                            message: "No",
+                            id: "120",
                         },
                     },
                 },

@@ -34,28 +34,32 @@ export default async function replySentenceWithText(
     });
   } else if (typeof reply.message === "object") {
     reply.message.forEach(async (message) => {
-      await axios({
-        method: "POST", // Required, HTTP method, a string, e.g. POST, GET
-        url:
-          "https://graph.facebook.com/v15.0/" + phone_number_id + "/messages",
-        data: {
-          messaging_product: "whatsapp",
-          context: reply.contextId
-            ? {
-                message_id: reply.contextId,
-              }
-            : undefined,
-          to: from,
-          text: { body: `${message}` },
-        },
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-      }).catch(() => {
-        console.log(token);
-        console.log("error replying with text");
-      });
+      if (typeof message !== "object") {
+        await axios({
+          method: "POST", // Required, HTTP method, a string, e.g. POST, GET
+          url:
+            "https://graph.facebook.com/v15.0/" + phone_number_id + "/messages",
+          data: {
+            messaging_product: "whatsapp",
+            context: reply.contextId
+              ? {
+                  message_id: reply.contextId,
+                }
+              : undefined,
+            to: from,
+            text: { body: `${message}` },
+          },
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        }).catch(() => {
+          console.log(token);
+          console.log("error replying with text");
+        });
+      } else if (message.typeOfReply === "interactive") {
+        replySentenceWithInteractive(request, message);
+      }
     });
   }
   return response;

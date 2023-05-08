@@ -68,7 +68,7 @@ app.post("/webhook", async (request: Request, response: Response) => {
       let phoneNumber = request.body.entry[0].changes[0].value.messages[0].from;
       console.log(
         "this is the request stuff",
-        request.body.entry[0].changes[0].value.messages[0]
+        request.body.entry[0].changes[0].value
       );
       let contextId =
         request.body.entry[0].changes[0].value.messages[0].context == undefined

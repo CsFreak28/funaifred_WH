@@ -57,7 +57,6 @@ app.get("/webhook", (request, response) => {
     }
 });
 app.post("/webhook", (request, response) => __awaiter(void 0, void 0, void 0, function* () {
-    console.log("hiii");
     // Parse the request body from the POST.
     let body = request.body;
     // Check the Incoming webhook message.
@@ -70,7 +69,7 @@ app.post("/webhook", (request, response) => __awaiter(void 0, void 0, void 0, fu
             request.body.entry[0].changes[0].value.messages[0]) {
             let messageType = request.body.entry[0].changes[0].value.messages[0].type;
             let phoneNumber = request.body.entry[0].changes[0].value.messages[0].from;
-            console.log(request.body.entry[0].changes[0].value.messages[0]);
+            console.log("this is the request stuff", request.body.entry[0].changes[0].value.messages[0]);
             let contextId = request.body.entry[0].changes[0].value.messages[0].context == undefined
                 ? undefined
                 : request.body.entry[0].changes[0].value.messages[0].context.id;

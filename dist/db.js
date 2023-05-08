@@ -21,3 +21,6 @@ export function userExistsInDB(phoneNumber) {
         return usersDBRecord;
     });
 }
+export function addConversationToUserDB(phoneNumber, conversation) {
+    return __awaiter(this, void 0, void 0, function* () { });
+}

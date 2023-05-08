@@ -10,6 +10,7 @@ import {
   where,
   DocumentData,
 } from "firebase/firestore";
+import { conversation } from "./interfaces.js";
 export async function userExistsInDB(
   phoneNumber: string
 ): Promise<DocumentData | undefined> {
@@ -22,3 +23,7 @@ export async function userExistsInDB(
   }
   return usersDBRecord;
 }
+export async function addConversationToUserDB(
+  phoneNumber: string,
+  conversation: conversation
+) {}

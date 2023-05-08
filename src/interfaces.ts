@@ -15,8 +15,11 @@ interface StudentProfile {
 
 export interface reply {
   contextId?: string;
-  message: string | Array<string>;
-  // noReply: boolean; //
+  message:
+    | string
+    | Array<
+        string | { text: string; typeOfReply: string; options?: Array<string> }
+      >;
 }
 export interface message {
   text: string;
@@ -39,6 +42,7 @@ export interface usersMsgData {
   usrSentence: string;
   usrSentenceID: string | undefined;
   sentenceUsrIsReplyingID?: string;
+  userHasLocalConversation?: boolean;
 }
 export interface conversation {
   timeOfInteraction: string;

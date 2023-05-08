@@ -6,6 +6,7 @@ export default async function replySentenceWithText(
   request: Request,
   reply: reply
 ) {
+  let firstMessageHasSent = false;
   let phone_number_id =
     request.body.entry[0].changes[0].value.metadata.phone_number_id;
   let from = request.body.entry[0].changes[0].value.messages[0].from; // extract the phone number from the webhook payload
@@ -58,7 +59,10 @@ export default async function replySentenceWithText(
           console.log("error replying with text");
         });
       } else if (message.typeOfReply === "interactive") {
-        replySentenceWithInteractive(request, message);
+        setTimeout(() => {
+          console.log("sent out");
+          replySentenceWithInteractive(request, message);
+        }, 500);
       }
     });
   }

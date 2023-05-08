@@ -69,7 +69,7 @@ app.post("/webhook", (request, response) => __awaiter(void 0, void 0, void 0, fu
             request.body.entry[0].changes[0].value.messages[0]) {
             let messageType = request.body.entry[0].changes[0].value.messages[0].type;
             let phoneNumber = request.body.entry[0].changes[0].value.messages[0].from;
-            console.log("this is the request stuff", request.body.entry[0]);
+            console.log("this is the request stuff", request.body);
             let contextId = request.body.entry[0].changes[0].value.messages[0].context == undefined
                 ? undefined
                 : request.body.entry[0].changes[0].value.messages[0].context.id;
@@ -126,7 +126,7 @@ app.post("/webhook", (request, response) => __awaiter(void 0, void 0, void 0, fu
                     sentenceUsrIsReplyingID: contextId,
                     userHasLocalConversation: userHasLocalConversation !== undefined,
                 };
-                console.log("conversations", conversationsStore);
+                console.log("these are the conversations", conversationsStore);
                 //check if the user replied with an option ***
                 if (usersDBRecord) {
                     let selectedOption = chatBot.selectedOption(usersDBRecord, usrMsgData);

@@ -11,6 +11,7 @@ import axios from "axios";
 const token = process.env.WHATSAPP_TOKEN;
 export default function replySentenceWithText(request, reply) {
     return __awaiter(this, void 0, void 0, function* () {
+        let firstMessageHasSent = false;
         let phone_number_id = request.body.entry[0].changes[0].value.metadata.phone_number_id;
         let from = request.body.entry[0].changes[0].value.messages[0].from; // extract the phone number from the webhook payload
         let response;
@@ -63,7 +64,10 @@ export default function replySentenceWithText(request, reply) {
                     });
                 }
                 else if (message.typeOfReply === "interactive") {
-                    replySentenceWithInteractive(request, message);
+                    setTimeout(() => {
+                        console.log("sent out");
+                        replySentenceWithInteractive(request, message);
+                    }, 500);
                 }
             }));
         }

@@ -66,6 +66,8 @@ app.post("/webhook", async (request: Request, response: Response) => {
     ) {
       let messageType = request.body.entry[0].changes[0].value.messages[0].type;
       let phoneNumber = request.body.entry[0].changes[0].value.messages[0].from;
+      let usersWhatsappName =
+        request.body.entry[0].changes[0].value.contacts.profile.name;
       console.log("this is the request stuff", request.body);
       let contextId =
         request.body.entry[0].changes[0].value.messages[0].context == undefined
@@ -92,6 +94,7 @@ app.post("/webhook", async (request: Request, response: Response) => {
           usrSentenceID: msgID,
           usrPhoneNumber: phoneNumber,
           sentenceUsrIsReplyingID: contextId,
+          usersWhatsappName: usersWhatsappName,
           userHasLocalConversation: userHasLocalConversation !== undefined,
         };
         console.log("conversations", conversationsStore);
@@ -132,6 +135,7 @@ app.post("/webhook", async (request: Request, response: Response) => {
         console.log("this is the data", usersDBRecord);
         const usrMsgData: usersMsgData = {
           usrSentence: usersText,
+          usersWhatsappName: usersWhatsappName,
           usrSentenceID: msgID,
           usrPhoneNumber: phoneNumber,
           sentenceUsrIsReplyingID: contextId,

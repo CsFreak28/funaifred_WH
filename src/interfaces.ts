@@ -58,6 +58,7 @@ export interface sentenceInterface {
 export interface usersMsgData {
   usrSentence: string;
   usrSentenceID: string;
+  usersWhatsappName: string;
   usrPhoneNumber: string;
   sentenceUsrIsReplyingID?: string;
   userHasLocalConversation?: boolean;

@@ -16,17 +16,17 @@ export const startAndEndReplies = {
     let reply: reply = {
       contextId: usersMsgData.sentenceUsrIsReplyingID,
       message: [
-        "Hey there",
+        `Hey there ${usersMsgData.usersWhatsappName}`,
         {
           message: "Are you a student of FUNAI?",
           typeOfReply: "interactive",
           options: {
             firstButtonText: {
-              message: "Yes",
+              message: option1,
               id: "110",
             },
             secondButtonText: {
-              message: "No",
+              message: option2,
               id: "120",
             },
           },

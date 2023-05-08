@@ -63,7 +63,11 @@ export default class ChatBot {
       let previousSentences = conversation.previousSentences;
       let sentenceUserReplied: sentenceInterface | undefined;
       let selectedOption: string | undefined | { replyTo: string };
-      console.log("previous sentences", previousSentences);
+      console.log("previous sentenceID", previousSentences[0].msgID);
+      console.log(
+        "current sentenceReplyID",
+        usersMsgData.sentenceUsrIsReplyingID
+      );
       previousSentences?.forEach((sentence: sentenceInterface) => {
         sentence.msgId === usersMsgData.sentenceUsrIsReplyingID &&
           (sentenceUserReplied = sentence);

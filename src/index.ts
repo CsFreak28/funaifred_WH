@@ -83,6 +83,7 @@ app.post("/webhook", async (request: Request, response: Response) => {
           request.body.entry[0].changes[0].value.messages[0].text.body;
         let usersConversation: conversation | undefined =
           userExistsInLocalConversations(phoneNumber, conversations);
+        let userHasLocalConversation = usersConversation;
         let usersDBRecord =
           usersConversation === undefined
             ? await userExistsInDB(phoneNumber)
@@ -93,6 +94,7 @@ app.post("/webhook", async (request: Request, response: Response) => {
           usrSentence: usersText,
           usrSentenceID: msgID,
           sentenceUsrIsReplyingID: contextId,
+          userHasLocalConversation: userHasLocalConversation !== undefined,
         };
         if (usersDBRecord === undefined) {
           const reply = chatBot.processKeyword("userDoesntExist", usrMsgData);

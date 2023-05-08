@@ -3,12 +3,12 @@ import { Request } from "express";
 import { reply } from "./interfaces.js";
 const token = process.env.WHATSAPP_TOKEN;
 export default async function replySentenceWithText(
-  req: Request,
+  request: Request,
   reply: reply
 ) {
   let phone_number_id =
-    req.body.entry[0].changes[0].value.metadata.phone_number_id;
-  let from = req.body.entry[0].changes[0].value.messages[0].from; // extract the phone number from the webhook payload
+    request.body.entry[0].changes[0].value.metadata.phone_number_id;
+  let from = request.body.entry[0].changes[0].value.messages[0].from; // extract the phone number from the webhook payload
   let response;
   if (typeof reply.message !== "object") {
     response = await axios({
@@ -58,5 +58,55 @@ export default async function replySentenceWithText(
       });
     });
   }
+  return response;
+}
+
+export async function replySentenceWithInteractive(
+  request: Request,
+  reply: reply
+) {
+  let phone_number_id =
+    request.body.entry[0].changes[0].value.metadata.phone_number_id;
+  let from = request.body.entry[0].changes[0].value.messages[0].from;
+  let response = null;
+  let buttons = [];
+  for (let i in reply.options) {
+    buttons.push({
+      type: "reply",
+      reply: {
+        title: reply.options[i].message,
+        id: reply.options[i].id,
+      },
+    });
+  }
+  await axios({
+    method: "POST",
+    url: "https://graph.facebook.com/v15.0/" + phone_number_id + "/messages",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+    data: {
+      messaging_product: "whatsapp",
+      recipient_type: "individual",
+      to: from,
+      type: "interactive",
+      interactive: {
+        type: "button",
+        body: {
+          text: reply.message,
+        },
+        action: {
+          buttons: buttons,
+        },
+      },
+    },
+  })
+    .then((res) => {
+      response = res;
+    })
+    .catch((e) => {
+      console.log("this is the error oo", e);
+    });
   return response;
 }

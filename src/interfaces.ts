@@ -15,10 +15,27 @@ interface StudentProfile {
 
 export interface reply {
   contextId?: string;
+  type?: "interactive" | "list";
+  options?: {
+    [key: string]: {
+      message: string;
+      id: string;
+    };
+  };
   message:
     | string
     | Array<
-        string | { text: string; typeOfReply: string; options?: Array<string> }
+        | string
+        | {
+            message: string;
+            typeOfReply: "interactive" | "list";
+            options?: {
+              [key: string]: {
+                message: string;
+                id: string;
+              };
+            };
+          }
       >;
 }
 export interface message {
@@ -40,7 +57,8 @@ export interface sentenceInterface {
 }
 export interface usersMsgData {
   usrSentence: string;
-  usrSentenceID: string | undefined;
+  usrSentenceID: string;
+  usrPhoneNumber: string;
   sentenceUsrIsReplyingID?: string;
   userHasLocalConversation?: boolean;
 }

@@ -1,3 +1,4 @@
+import { DocumentData } from "firebase/firestore";
 import {
   reply,
   conversation,
@@ -7,47 +8,62 @@ import {
 } from "./interfaces.js";
 import { noExistuserReplies } from "./noExistUser.js";
 import { paymentReplies } from "./paymentReplies.js";
-import replySentenceWithText from "./sendMessage.js";
+import { startAndEndReplies } from "./startAndEndReplies.js";
+import replySentenceWithText, {
+  replySentenceWithInteractive,
+} from "./sendMessage.js";
 import { Request } from "express";
 export default class ChatBot {
   chatBotFunctions: {
-    [name: string]: (conversationData: usersMsgData) => reply;
+    [name: string]: (conversationData: usersMsgData) => reply | Promise<reply>;
   };
   constructor() {
     this.chatBotFunctions = {
       //add the replies of different categories
       ...paymentReplies,
       ...noExistuserReplies,
+      ...startAndEndReplies,
     };
   }
-  processKeyword = (message: string, usrsMessage: usersMsgData) => {
+  processKeyword = async (
+    message: string | { replyTo: string } | undefined,
+    usrsMessage: usersMsgData
+  ) => {
     //use chatgpt to clean the message and find out it's category, that message belongs to
-    let cleanedMessage = message;
-    //get the reply of processing the users message
-    let resolve: undefined | reply =
-      this.chatBotFunctions[cleanedMessage](usrsMessage);
-    if (resolve === undefined) {
+    let reply: undefined | reply | Promise<reply>;
+    if (message !== undefined) {
+      let cleanedMessage =
+        typeof message === "string" ? message : message.replyTo;
+      //get the reply of processing the users message
+      reply = await this.chatBotFunctions[cleanedMessage](usrsMessage);
+    }
+    if (message === undefined || reply === undefined) {
+      //check if the users message contains certain keywords
       let noReply: reply = {
-        message: [
-          "I don't quite understand what you want me to do exactly",
-          "did you mean",
-        ],
+        message: ["I don't quite understand what you want me to do"],
       };
       return noReply;
     } else {
-      return resolve;
+      return reply;
     }
   };
-  reply = (request: Request, resolve: reply) => {
-    replySentenceWithText(request, resolve);
+  reply = (request: Request, reply: reply) => {
+    if (reply.type === undefined) {
+      replySentenceWithText(request, reply);
+    } else if (reply.type == "interactive") {
+      replySentenceWithInteractive(request, reply);
+    }
   };
-  selectedOption = (conversation: conversation, usersMsgData: usersMsgData) => {
+  selectedOption = (
+    conversation: conversation | DocumentData,
+    usersMsgData: usersMsgData
+  ) => {
     if (usersMsgData.usrSentenceID) {
       //if the user's message has an id, check which sentence he was replying to
       let previousSentences = conversation.previousSentences;
       let sentenceUserReplied: sentenceInterface | undefined;
-      let selectedOption: string | undefined;
-      previousSentences?.forEach((sentence) => {
+      let selectedOption: string | undefined | { replyTo: string };
+      previousSentences?.forEach((sentence: sentenceInterface) => {
         sentence.msgId === usersMsgData.usrSentenceID &&
           (sentenceUserReplied = sentence);
       });
@@ -55,17 +71,70 @@ export default class ChatBot {
         selectedOption =
           sentenceUserReplied.options !== null
             ? sentenceUserReplied.options[usersMsgData.usrSentence]
+            : sentenceUserReplied.freeReply !== undefined
+            ? sentenceUserReplied.freeReply
             : undefined;
       }
       return selectedOption;
     } else {
       //if users msg doesnt have a context id, then he may be replying to the lastbotSentence
       let lastBotSentence = conversation.lastBotSentence;
-      let selectedOption: string | undefined =
+      let selectedOption: string | undefined | { replyTo: string } =
         lastBotSentence.options !== null
           ? lastBotSentence.options[usersMsgData.usrSentence]
+          : lastBotSentence.freeReply !== undefined
+          ? lastBotSentence.freeReply
           : undefined;
       return selectedOption;
     }
+  };
+}
+
+// const chatBotDate = chatBotDates();
+// let timeStamp = chatBotDate.getTimeStamp();
+// let currentDateOfConv = chatBotDate.getCurrentDate();
+export function chatBotDates() {
+  return {
+    getCurrentDate: () => {
+      let dateobj = new Date();
+      let arrayOfMonths = [
+        "Jan",
+        "Feb",
+        "Mar",
+        "Apr",
+        "May",
+        "June",
+        "July",
+        "Aug",
+        "Sept",
+        "Oct",
+        "Nov",
+        "Dec",
+      ];
+      let month = arrayOfMonths[dateobj.getMonth()];
+      let date = dateobj.getDate();
+      let year = dateobj.getFullYear();
+      let dateOfConversation = `${month}${date}${year}`;
+      return dateOfConversation;
+    },
+    getTimeStamp: () => {
+      return new Date();
+    },
+    getPeriodOfTheDay: () => {
+      let date = new Date();
+      let dateTime = date.toTimeString();
+      let parsedTime = "";
+      for (let i = 0; i < 2; i++) {
+        parsedTime += dateTime[i];
+      }
+      let currentHour = parseInt(parsedTime);
+      let greeting =
+        currentHour <= 12
+          ? "Good morning 🌞"
+          : currentHour <= 16
+          ? "Good afternoon ☀"
+          : "Good evening 🌑";
+      return greeting;
+    },
   };
 }

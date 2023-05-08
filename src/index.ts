@@ -5,8 +5,8 @@ import {
   textIsAGreeting,
   userExistsInLocalConversations,
 } from "./helperFunctions.js";
+import { conversationsStore, getConversation } from "./store.js";
 import bodyParser, { text } from "body-parser";
-import replySentenceWithText from "./sendMessage.js";
 import { conversation, conversations, usersMsgData } from "./interfaces.js";
 import ChatBot from "./chatbot.js";
 dotenv.config();
@@ -18,13 +18,10 @@ app.use(
   })
 );
 let port = process.env.PORT;
-console.log("statr");
 // create a local store of all conversations
-let conversations: conversations = {};
+// let conversations: conversations = {};
 const chatBot = new ChatBot();
-console.log("connecticut");
 app.get("/", async (request: Request, response: Response) => {
-  console.log("superman");
   response.status(200);
   textIsAGreeting("hello");
   response.send("i am connected");
@@ -82,7 +79,7 @@ app.post("/webhook", async (request: Request, response: Response) => {
         let usersText: string =
           request.body.entry[0].changes[0].value.messages[0].text.body;
         let usersConversation: conversation | undefined =
-          userExistsInLocalConversations(phoneNumber, conversations);
+          getConversation(phoneNumber);
         let userHasLocalConversation = usersConversation;
         let usersDBRecord =
           usersConversation === undefined
@@ -93,20 +90,28 @@ app.post("/webhook", async (request: Request, response: Response) => {
         const usrMsgData: usersMsgData = {
           usrSentence: usersText,
           usrSentenceID: msgID,
+          usrPhoneNumber: phoneNumber,
           sentenceUsrIsReplyingID: contextId,
           userHasLocalConversation: userHasLocalConversation !== undefined,
         };
+        console.log("conversations", conversationsStore);
         if (usersDBRecord === undefined) {
-          const reply = chatBot.processKeyword("userDoesntExist", usrMsgData);
+          const reply = await chatBot.processKeyword(
+            "introMessage",
+            usrMsgData
+          );
           chatBot.reply(request, reply);
-        } else if (
-          usersDBRecord !== undefined &&
-          (await textIsAGreeting(usersText))
-        ) {
-          // replySentenceWithText(request, {
-          //   contextId: "",
-          // message: "welcome to my world",
-          // });
+        } else {
+          //check if the user replied with an option ***
+          let selectedOption = chatBot.selectedOption(
+            usersDBRecord,
+            usrMsgData
+          );
+          const reply = await chatBot.processKeyword(
+            selectedOption,
+            usrMsgData
+          );
+          chatBot.reply(request, reply);
         }
       } else if (messageType === "interactive") {
       } else if (messageType == "button") {

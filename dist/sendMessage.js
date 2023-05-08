@@ -9,10 +9,10 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 import axios from "axios";
 const token = process.env.WHATSAPP_TOKEN;
-export default function replySentenceWithText(req, reply) {
+export default function replySentenceWithText(request, reply) {
     return __awaiter(this, void 0, void 0, function* () {
-        let phone_number_id = req.body.entry[0].changes[0].value.metadata.phone_number_id;
-        let from = req.body.entry[0].changes[0].value.messages[0].from; // extract the phone number from the webhook payload
+        let phone_number_id = request.body.entry[0].changes[0].value.metadata.phone_number_id;
+        let from = request.body.entry[0].changes[0].value.messages[0].from; // extract the phone number from the webhook payload
         let response;
         if (typeof reply.message !== "object") {
             response = yield axios({
@@ -62,6 +62,53 @@ export default function replySentenceWithText(req, reply) {
                 });
             }));
         }
+        return response;
+    });
+}
+export function replySentenceWithInteractive(request, reply) {
+    return __awaiter(this, void 0, void 0, function* () {
+        let phone_number_id = request.body.entry[0].changes[0].value.metadata.phone_number_id;
+        let from = request.body.entry[0].changes[0].value.messages[0].from;
+        let response = null;
+        let buttons = [];
+        for (let i in reply.options) {
+            buttons.push({
+                type: "reply",
+                reply: {
+                    title: reply.options[i].message,
+                    id: reply.options[i].id,
+                },
+            });
+        }
+        yield axios({
+            method: "POST",
+            url: "https://graph.facebook.com/v15.0/" + phone_number_id + "/messages",
+            headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${token}`,
+            },
+            data: {
+                messaging_product: "whatsapp",
+                recipient_type: "individual",
+                to: from,
+                type: "interactive",
+                interactive: {
+                    type: "button",
+                    body: {
+                        text: reply.message,
+                    },
+                    action: {
+                        buttons: buttons,
+                    },
+                },
+            },
+        })
+            .then((res) => {
+            response = res;
+        })
+            .catch((e) => {
+            console.log("this is the error oo", e);
+        });
         return response;
     });
 }

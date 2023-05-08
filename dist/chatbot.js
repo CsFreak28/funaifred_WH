@@ -1,28 +1,44 @@
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
 import { noExistuserReplies } from "./noExistUser.js";
 import { paymentReplies } from "./paymentReplies.js";
-import replySentenceWithText from "./sendMessage.js";
+import { startAndEndReplies } from "./startAndEndReplies.js";
+import replySentenceWithText, { replySentenceWithInteractive, } from "./sendMessage.js";
 export default class ChatBot {
     constructor() {
-        this.processKeyword = (message, usrsMessage) => {
+        this.processKeyword = (message, usrsMessage) => __awaiter(this, void 0, void 0, function* () {
             //use chatgpt to clean the message and find out it's category, that message belongs to
-            let cleanedMessage = message;
-            //get the reply of processing the users message
-            let resolve = this.chatBotFunctions[cleanedMessage](usrsMessage);
-            if (resolve === undefined) {
+            let reply;
+            if (message !== undefined) {
+                let cleanedMessage = typeof message === "string" ? message : message.replyTo;
+                //get the reply of processing the users message
+                reply = yield this.chatBotFunctions[cleanedMessage](usrsMessage);
+            }
+            if (message === undefined || reply === undefined) {
+                //check if the users message contains certain keywords
                 let noReply = {
-                    message: [
-                        "I don't quite understand what you want me to do exactly",
-                        "did you mean",
-                    ],
+                    message: ["I don't quite understand what you want me to do"],
                 };
                 return noReply;
             }
             else {
-                return resolve;
+                return reply;
             }
-        };
-        this.reply = (request, resolve) => {
-            replySentenceWithText(request, resolve);
+        });
+        this.reply = (request, reply) => {
+            if (reply.type === undefined) {
+                replySentenceWithText(request, reply);
+            }
+            else if (reply.type == "interactive") {
+                replySentenceWithInteractive(request, reply);
+            }
         };
         this.selectedOption = (conversation, usersMsgData) => {
             if (usersMsgData.usrSentenceID) {
@@ -38,7 +54,9 @@ export default class ChatBot {
                     selectedOption =
                         sentenceUserReplied.options !== null
                             ? sentenceUserReplied.options[usersMsgData.usrSentence]
-                            : undefined;
+                            : sentenceUserReplied.freeReply !== undefined
+                                ? sentenceUserReplied.freeReply
+                                : undefined;
                 }
                 return selectedOption;
             }
@@ -47,10 +65,59 @@ export default class ChatBot {
                 let lastBotSentence = conversation.lastBotSentence;
                 let selectedOption = lastBotSentence.options !== null
                     ? lastBotSentence.options[usersMsgData.usrSentence]
-                    : undefined;
+                    : lastBotSentence.freeReply !== undefined
+                        ? lastBotSentence.freeReply
+                        : undefined;
                 return selectedOption;
             }
         };
-        this.chatBotFunctions = Object.assign(Object.assign({}, paymentReplies), noExistuserReplies);
+        this.chatBotFunctions = Object.assign(Object.assign(Object.assign({}, paymentReplies), noExistuserReplies), startAndEndReplies);
     }
+}
+// const chatBotDate = chatBotDates();
+// let timeStamp = chatBotDate.getTimeStamp();
+// let currentDateOfConv = chatBotDate.getCurrentDate();
+export function chatBotDates() {
+    return {
+        getCurrentDate: () => {
+            let dateobj = new Date();
+            let arrayOfMonths = [
+                "Jan",
+                "Feb",
+                "Mar",
+                "Apr",
+                "May",
+                "June",
+                "July",
+                "Aug",
+                "Sept",
+                "Oct",
+                "Nov",
+                "Dec",
+            ];
+            let month = arrayOfMonths[dateobj.getMonth()];
+            let date = dateobj.getDate();
+            let year = dateobj.getFullYear();
+            let dateOfConversation = `${month}${date}${year}`;
+            return dateOfConversation;
+        },
+        getTimeStamp: () => {
+            return new Date();
+        },
+        getPeriodOfTheDay: () => {
+            let date = new Date();
+            let dateTime = date.toTimeString();
+            let parsedTime = "";
+            for (let i = 0; i < 2; i++) {
+                parsedTime += dateTime[i];
+            }
+            let currentHour = parseInt(parsedTime);
+            let greeting = currentHour <= 12
+                ? "Good morning 🌞"
+                : currentHour <= 16
+                    ? "Good afternoon ☀"
+                    : "Good evening 🌑";
+            return greeting;
+        },
+    };
 }

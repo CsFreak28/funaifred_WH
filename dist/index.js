@@ -10,7 +10,8 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 import express from "express";
 import dotenv from "dotenv";
 import { userExistsInDB } from "./db.js";
-import { textIsAGreeting, userExistsInLocalConversations, } from "./helperFunctions.js";
+import { textIsAGreeting, } from "./helperFunctions.js";
+import { conversationsStore, getConversation } from "./store.js";
 import bodyParser from "body-parser";
 import ChatBot from "./chatbot.js";
 dotenv.config();
@@ -20,13 +21,10 @@ app.use(bodyParser.urlencoded({
     extended: true,
 }));
 let port = process.env.PORT;
-console.log("statr");
 // create a local store of all conversations
-let conversations = {};
+// let conversations: conversations = {};
 const chatBot = new ChatBot();
-console.log("connecticut");
 app.get("/", (request, response) => __awaiter(void 0, void 0, void 0, function* () {
-    console.log("superman");
     response.status(200);
     textIsAGreeting("hello");
     response.send("i am connected");
@@ -81,7 +79,8 @@ app.post("/webhook", (request, response) => __awaiter(void 0, void 0, void 0, fu
             if (messageType === "text") {
                 // extract the message text from the webhook payload.
                 let usersText = request.body.entry[0].changes[0].value.messages[0].text.body;
-                let usersConversation = userExistsInLocalConversations(phoneNumber, conversations);
+                let usersConversation = getConversation(phoneNumber);
+                let userHasLocalConversation = usersConversation;
                 let usersDBRecord = usersConversation === undefined
                     ? yield userExistsInDB(phoneNumber)
                     : usersConversation;
@@ -90,18 +89,20 @@ app.post("/webhook", (request, response) => __awaiter(void 0, void 0, void 0, fu
                 const usrMsgData = {
                     usrSentence: usersText,
                     usrSentenceID: msgID,
+                    usrPhoneNumber: phoneNumber,
                     sentenceUsrIsReplyingID: contextId,
+                    userHasLocalConversation: userHasLocalConversation !== undefined,
                 };
+                console.log("conversations", conversationsStore);
                 if (usersDBRecord === undefined) {
-                    const reply = chatBot.processKeyword("userDoesntExist", usrMsgData);
+                    const reply = yield chatBot.processKeyword("introMessage", usrMsgData);
                     chatBot.reply(request, reply);
                 }
-                else if (usersDBRecord !== undefined &&
-                    (yield textIsAGreeting(usersText))) {
-                    // replySentenceWithText(request, {
-                    //   contextId: "",
-                    // message: "welcome to my world",
-                    // });
+                else {
+                    //check if the user replied with an option ***
+                    let selectedOption = chatBot.selectedOption(usersDBRecord, usrMsgData);
+                    const reply = yield chatBot.processKeyword(selectedOption, usrMsgData);
+                    chatBot.reply(request, reply);
                 }
             }
             else if (messageType === "interactive") {

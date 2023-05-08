@@ -15,3 +15,6 @@ export function addLastSentenceToConversation(
   conversationsStore[key].lastBotSentence = lastBotSentence;
   conversationsStore[key].previousSentences?.push(lastBotSentence);
 }
+export function getConversation(phoneNumber: string): conversation | undefined {
+  return conversationsStore[phoneNumber];
+}

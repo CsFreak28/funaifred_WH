@@ -61,7 +61,7 @@ export const startAndEndReplies = {
         if (userProfile) {
             reply = {
                 message: "user document found",
-                contextId: usersMsgData.sentenceUsrIsReplyingID,
+                contextId: usersMsgData.usrSentenceID,
             };
             lastBotSentence = {
                 msgId: "",
@@ -73,7 +73,7 @@ export const startAndEndReplies = {
         }
         else {
             reply = {
-                contextId: usersMsgData.sentenceUsrIsReplyingID,
+                contextId: usersMsgData.usrSentenceID,
                 message: [
                     "I just finished searching our database for your information, nothing there about you",
                     "give me your real name and i will send it to Benjamin(course rep of 200level computer science) to confirm if you're in his department",
@@ -93,7 +93,7 @@ export const startAndEndReplies = {
     nonStudents: (usersMsgData) => {
         let reply = {
             message: "I was not built for non students",
-            contextId: usersMsgData.sentenceUsrIsReplyingID,
+            contextId: usersMsgData.usrSentenceID,
         };
         return reply;
     },

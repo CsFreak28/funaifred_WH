@@ -106,6 +106,33 @@ app.post("/webhook", (request, response) => __awaiter(void 0, void 0, void 0, fu
                 }
             }
             else if (messageType === "interactive") {
+                let usersText = request.body.entry[0].changes[0].value.messages[0].interactive
+                    .type === "button_reply"
+                    ? request.body.entry[0].changes[0].value.messages[0].interactive
+                        .button_reply.title
+                    : request.body.entry[0].changes[0].value.messages[0].interactive
+                        .list_reply;
+                let usersConversation = getConversation(phoneNumber);
+                let userHasLocalConversation = usersConversation;
+                let usersDBRecord = usersConversation === undefined
+                    ? yield userExistsInDB(phoneNumber)
+                    : usersConversation;
+                //if usersDBRecord doesn't exist and users local conversation isn't available then user isnt recognized as a student
+                console.log("this is the data", usersDBRecord);
+                const usrMsgData = {
+                    usrSentence: usersText,
+                    usrSentenceID: msgID,
+                    usrPhoneNumber: phoneNumber,
+                    sentenceUsrIsReplyingID: contextId,
+                    userHasLocalConversation: userHasLocalConversation !== undefined,
+                };
+                console.log("conversations", conversationsStore);
+                //check if the user replied with an option ***
+                if (usersDBRecord) {
+                    let selectedOption = chatBot.selectedOption(usersDBRecord, usrMsgData);
+                    const reply = yield chatBot.processKeyword(selectedOption, usrMsgData);
+                    chatBot.reply(request, reply);
+                }
             }
             else if (messageType == "button") {
             }

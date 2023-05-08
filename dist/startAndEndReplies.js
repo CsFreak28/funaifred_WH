@@ -90,6 +90,13 @@ export const startAndEndReplies = {
         addLastSentenceToConversation(usersMsgData.usrPhoneNumber, lastBotSentence);
         return reply;
     }),
+    confirmAcctFromCR: (usersMsgData) => {
+        let reply = {
+            message: "Your details will be confirmed by the course rep of this department",
+            contextId: usersMsgData.usrSentenceID,
+        };
+        return reply;
+    },
     nonStudents: (usersMsgData) => {
         let reply = {
             message: "I was not built for non students",

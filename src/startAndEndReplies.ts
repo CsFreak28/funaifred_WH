@@ -87,6 +87,14 @@ export const startAndEndReplies = {
     addLastSentenceToConversation(usersMsgData.usrPhoneNumber, lastBotSentence);
     return reply;
   },
+  confirmAcctFromCR: (usersMsgData: usersMsgData) => {
+    let reply: reply = {
+      message:
+        "Your details will be confirmed by the course rep of this department",
+      contextId: usersMsgData.usrSentenceID,
+    };
+    return reply;
+  },
   nonStudents: (usersMsgData: usersMsgData) => {
     let reply: reply = {
       message: "I was not built for non students",

@@ -70,6 +70,7 @@ app.post("/webhook", (request, response) => __awaiter(void 0, void 0, void 0, fu
             request.body.entry[0].changes[0].value.messages[0]) {
             let messageType = request.body.entry[0].changes[0].value.messages[0].type;
             let phoneNumber = request.body.entry[0].changes[0].value.messages[0].from;
+            console.log(request.body.entry[0].changes[0].value.messages[0]);
             let contextId = request.body.entry[0].changes[0].value.messages[0].context == undefined
                 ? undefined
                 : request.body.entry[0].changes[0].value.messages[0].context.id;
@@ -117,7 +118,6 @@ app.post("/webhook", (request, response) => __awaiter(void 0, void 0, void 0, fu
         response.sendStatus(404);
     }
 }));
-app.get("/testWebhook", (request, response) => { });
 app.listen(port || 8000, () => {
     console.log("i am listening bro ⚡ on", port);
 });

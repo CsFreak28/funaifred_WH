@@ -52,7 +52,6 @@ app.get("/webhook", (request: Request, response: Response) => {
   }
 });
 app.post("/webhook", async (request: Request, response: Response) => {
-  console.log("hiii");
   // Parse the request body from the POST.
   let body = request.body;
   // Check the Incoming webhook message.
@@ -67,6 +66,10 @@ app.post("/webhook", async (request: Request, response: Response) => {
     ) {
       let messageType = request.body.entry[0].changes[0].value.messages[0].type;
       let phoneNumber = request.body.entry[0].changes[0].value.messages[0].from;
+      console.log(
+        "this is the request stuff",
+        request.body.entry[0].changes[0].value.messages[0]
+      );
       let contextId =
         request.body.entry[0].changes[0].value.messages[0].context == undefined
           ? undefined
@@ -123,7 +126,6 @@ app.post("/webhook", async (request: Request, response: Response) => {
     response.sendStatus(404);
   }
 });
-app.get("/testWebhook", (request: Request, response: Response) => {});
 app.listen(port || 8000, () => {
   console.log("i am listening bro ⚡ on", port);
 });

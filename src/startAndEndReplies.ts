@@ -15,7 +15,23 @@ export const startAndEndReplies = {
     let option2 = "No, I'm not";
     let reply: reply = {
       contextId: usersMsgData.sentenceUsrIsReplyingID,
-      message: "Hey there",
+      message: [
+        "Hey there",
+        {
+          message: "Are you a student of FUNAI?",
+          typeOfReply: "interactive",
+          options: {
+            firstButtonText: {
+              message: "Yes",
+              id: "110",
+            },
+            secondButtonText: {
+              message: "No",
+              id: "120",
+            },
+          },
+        },
+      ],
     };
     let lastBotSentence: sentenceInterface = {
       msgId: usersMsgData.usrSentenceID,

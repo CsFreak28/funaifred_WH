@@ -18,7 +18,19 @@ export const startAndEndReplies = {
         let option2 = "No, I'm not";
         let reply = {
             contextId: usersMsgData.sentenceUsrIsReplyingID,
-            message: "Hey there",
+            message: [
+                "Hey there",
+                {
+                    message: "",
+                    typeOfReply: "interactive",
+                    options: {
+                        firstButtonText: {
+                            message: "",
+                            id: "",
+                        },
+                    },
+                },
+            ],
         };
         let lastBotSentence = {
             msgId: usersMsgData.usrSentenceID,

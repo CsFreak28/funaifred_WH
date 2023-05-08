@@ -67,7 +67,7 @@ export interface conversation {
   timeOfInteraction: string;
   lastBotSentence: sentenceInterface;
   lastChat: string;
-  previousSentences: Array<sentenceInterface> | null;
+  previousSentences: Array<sentenceInterface>;
 }
 export interface conversations {
   [key: string]: conversation;

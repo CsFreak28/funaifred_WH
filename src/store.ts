@@ -18,3 +18,23 @@ export function addLastSentenceToConversation(
 export function getConversation(phoneNumber: string): conversation | undefined {
   return conversationsStore[phoneNumber];
 }
+export function setConversationID(phoneNumber: string, msgID: string) {
+  conversationsStore[phoneNumber].lastBotSentence.msgId = msgID;
+  let lengthOfPreviousSentencesArray =
+    conversationsStore[phoneNumber].previousSentences?.length;
+  let lastBotSentenceIndex =
+    lengthOfPreviousSentencesArray !== undefined
+      ? lengthOfPreviousSentencesArray - 1
+      : undefined;
+  let lastBotSentenceInPreviousSentences: sentenceInterface = {
+    msgId: "",
+    options: {},
+  };
+  if (lastBotSentenceIndex) {
+    if (conversationsStore[phoneNumber].previousSentences !== null) {
+      lastBotSentenceInPreviousSentences =
+        conversationsStore[phoneNumber].previousSentences[0];
+    }
+  }
+  lastBotSentenceInPreviousSentences.msgId = msgID;
+}

@@ -8,10 +8,10 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 import axios from "axios";
+import { setConversationID } from "./store.js";
 const token = process.env.WHATSAPP_TOKEN;
 export default function replySentenceWithText(request, reply) {
     return __awaiter(this, void 0, void 0, function* () {
-        let firstMessageHasSent = false;
         let phone_number_id = request.body.entry[0].changes[0].value.metadata.phone_number_id;
         let from = request.body.entry[0].changes[0].value.messages[0].from; // extract the phone number from the webhook payload
         let response;
@@ -37,9 +37,12 @@ export default function replySentenceWithText(request, reply) {
                 console.log(token);
                 console.log("error replying with text");
             });
+            let msgID = response.data.messages[0].id;
+            console.log("the msgID", msgID);
+            setConversationID(from, msgID);
         }
         else if (typeof reply.message === "object") {
-            reply.message.forEach((message) => __awaiter(this, void 0, void 0, function* () {
+            reply.message.forEach((message, i) => __awaiter(this, void 0, void 0, function* () {
                 if (typeof message !== "object") {
                     yield axios({
                         method: "POST",
@@ -58,16 +61,27 @@ export default function replySentenceWithText(request, reply) {
                             "Content-Type": "application/json",
                             Authorization: `Bearer ${token}`,
                         },
-                    }).catch(() => {
+                    })
+                        .then((response) => {
+                        if (i === reply.message.length - 1) {
+                            let msgID = response.data.messages[0].id;
+                            console.log("the msgID", msgID);
+                            setConversationID(from, msgID);
+                        }
+                    })
+                        .catch(() => {
                         console.log(token);
                         console.log("error replying with text");
                     });
                 }
                 else if (message.typeOfReply === "interactive") {
-                    setTimeout(() => {
+                    setTimeout(() => __awaiter(this, void 0, void 0, function* () {
                         console.log("sent out");
-                        replySentenceWithInteractive(request, message);
-                    }, 500);
+                        const response = yield replySentenceWithInteractive(request, message);
+                        let msgID = response.data.messages[0].id;
+                        console.log("the msgID", msgID);
+                        setConversationID(from, msgID);
+                    }), 500);
                 }
             }));
         }
@@ -78,7 +92,7 @@ export function replySentenceWithInteractive(request, reply) {
     return __awaiter(this, void 0, void 0, function* () {
         let phone_number_id = request.body.entry[0].changes[0].value.metadata.phone_number_id;
         let from = request.body.entry[0].changes[0].value.messages[0].from;
-        let response = null;
+        let response = "";
         let buttons = [];
         for (let i in reply.options) {
             buttons.push({

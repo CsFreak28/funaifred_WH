@@ -1,16 +1,16 @@
-import axios from "axios";
+import axios, { AxiosResponse } from "axios";
 import { Request } from "express";
 import { reply } from "./interfaces.js";
+import { setConversationID } from "./store.js";
 const token = process.env.WHATSAPP_TOKEN;
 export default async function replySentenceWithText(
   request: Request,
   reply: reply
 ) {
-  let firstMessageHasSent = false;
   let phone_number_id =
     request.body.entry[0].changes[0].value.metadata.phone_number_id;
   let from = request.body.entry[0].changes[0].value.messages[0].from; // extract the phone number from the webhook payload
-  let response;
+  let response: any;
   if (typeof reply.message !== "object") {
     response = await axios({
       method: "POST", // Required, HTTP method, a string, e.g. POST, GET
@@ -33,8 +33,11 @@ export default async function replySentenceWithText(
       console.log(token);
       console.log("error replying with text");
     });
+    let msgID = response.data.messages[0].id;
+    console.log("the msgID", msgID);
+    setConversationID(from, msgID);
   } else if (typeof reply.message === "object") {
-    reply.message.forEach(async (message) => {
+    reply.message.forEach(async (message, i) => {
       if (typeof message !== "object") {
         await axios({
           method: "POST", // Required, HTTP method, a string, e.g. POST, GET
@@ -54,14 +57,26 @@ export default async function replySentenceWithText(
             "Content-Type": "application/json",
             Authorization: `Bearer ${token}`,
           },
-        }).catch(() => {
-          console.log(token);
-          console.log("error replying with text");
-        });
+        })
+          .then((response) => {
+            if (i === reply.message.length - 1) {
+              let msgID = response.data.messages[0].id;
+              console.log("the msgID", msgID);
+              setConversationID(from, msgID);
+            }
+          })
+          .catch(() => {
+            console.log(token);
+            console.log("error replying with text");
+          });
       } else if (message.typeOfReply === "interactive") {
-        setTimeout(() => {
+        setTimeout(async () => {
           console.log("sent out");
-          replySentenceWithInteractive(request, message);
+          const response: AxiosResponse | string | any =
+            await replySentenceWithInteractive(request, message);
+          let msgID = response.data.messages[0].id;
+          console.log("the msgID", msgID);
+          setConversationID(from, msgID);
         }, 500);
       }
     });
@@ -76,7 +91,7 @@ export async function replySentenceWithInteractive(
   let phone_number_id =
     request.body.entry[0].changes[0].value.metadata.phone_number_id;
   let from = request.body.entry[0].changes[0].value.messages[0].from;
-  let response = null;
+  let response: any | AxiosResponse<any> = "";
   let buttons = [];
   for (let i in reply.options) {
     buttons.push({

@@ -34,7 +34,7 @@ export const startAndEndReplies = {
       ],
     };
     let lastBotSentence: sentenceInterface = {
-      msgId: usersMsgData.usrSentenceID,
+      msgId: "",
       options: {
         [option1]: "checkIfUserIsAStudent",
         [option2]: "nonStudents",
@@ -61,7 +61,7 @@ export const startAndEndReplies = {
         contextId: usersMsgData.sentenceUsrIsReplyingID,
       };
       lastBotSentence = {
-        msgId: usersMsgData.usrSentenceID,
+        msgId: "",
         options: {
           [option1]: "help",
           [option2]: "reConfirmFromCR",
@@ -76,7 +76,7 @@ export const startAndEndReplies = {
         ],
       };
       lastBotSentence = {
-        msgId: usersMsgData.usrSentenceID,
+        msgId: "",
         options: null,
         freeReply: {
           replyTo: "confirmAcctFromCR",

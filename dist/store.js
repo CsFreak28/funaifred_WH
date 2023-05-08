@@ -10,3 +10,22 @@ export function addLastSentenceToConversation(key, lastBotSentence) {
 export function getConversation(phoneNumber) {
     return conversationsStore[phoneNumber];
 }
+export function setConversationID(phoneNumber, msgID) {
+    var _a;
+    conversationsStore[phoneNumber].lastBotSentence.msgId = msgID;
+    let lengthOfPreviousSentencesArray = (_a = conversationsStore[phoneNumber].previousSentences) === null || _a === void 0 ? void 0 : _a.length;
+    let lastBotSentenceIndex = lengthOfPreviousSentencesArray !== undefined
+        ? lengthOfPreviousSentencesArray - 1
+        : undefined;
+    let lastBotSentenceInPreviousSentences = {
+        msgId: "",
+        options: {},
+    };
+    if (lastBotSentenceIndex) {
+        if (conversationsStore[phoneNumber].previousSentences !== null) {
+            lastBotSentenceInPreviousSentences =
+                conversationsStore[phoneNumber].previousSentences[0];
+        }
+    }
+    lastBotSentenceInPreviousSentences.msgId = msgID;
+}

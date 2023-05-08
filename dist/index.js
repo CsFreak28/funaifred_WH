@@ -11,7 +11,7 @@ import express from "express";
 import dotenv from "dotenv";
 import { userExistsInDB } from "./db.js";
 import { textIsAGreeting, } from "./helperFunctions.js";
-import { conversationsStore, getConversation } from "./store.js";
+import { getConversation } from "./store.js";
 import bodyParser from "body-parser";
 import ChatBot from "./chatbot.js";
 dotenv.config();
@@ -86,7 +86,7 @@ app.post("/webhook", (request, response) => __awaiter(void 0, void 0, void 0, fu
                     ? yield userExistsInDB(phoneNumber)
                     : usersConversation;
                 //if usersDBRecord doesn't exist and users local conversation isn't available then user isnt recognized as a student
-                console.log("this is the data", usersDBRecord);
+                console.log("userDBrecord", usersDBRecord);
                 const usrMsgData = {
                     usrSentence: usersText,
                     usrSentenceID: msgID,
@@ -95,7 +95,7 @@ app.post("/webhook", (request, response) => __awaiter(void 0, void 0, void 0, fu
                     usersWhatsappName: usersWhatsappName,
                     userHasLocalConversation: userHasLocalConversation !== undefined,
                 };
-                console.log("conversations", conversationsStore);
+                // console.log("conversations", conversationsStore);
                 if (usersDBRecord === undefined) {
                     const reply = yield chatBot.processKeyword("introMessage", usrMsgData);
                     chatBot.reply(request, reply);
@@ -120,7 +120,7 @@ app.post("/webhook", (request, response) => __awaiter(void 0, void 0, void 0, fu
                     ? yield userExistsInDB(phoneNumber)
                     : usersConversation;
                 //if usersDBRecord doesn't exist and users local conversation isn't available then user isnt recognized as a student
-                console.log("this is the data", usersDBRecord);
+                // console.log("this is the data", usersDBRecord);
                 const usrMsgData = {
                     usrSentence: usersText,
                     usersWhatsappName: usersWhatsappName,
@@ -129,10 +129,11 @@ app.post("/webhook", (request, response) => __awaiter(void 0, void 0, void 0, fu
                     sentenceUsrIsReplyingID: contextId,
                     userHasLocalConversation: userHasLocalConversation !== undefined,
                 };
-                console.log("these are the conversations", conversationsStore);
+                // console.log("these are the conversations", conversationsStore);
                 //check if the user replied with an option ***
                 if (usersDBRecord) {
                     let selectedOption = chatBot.selectedOption(usersDBRecord, usrMsgData);
+                    console.log(selectedOption);
                     const reply = yield chatBot.processKeyword(selectedOption, usrMsgData);
                     chatBot.reply(request, reply);
                 }

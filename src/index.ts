@@ -88,7 +88,7 @@ app.post("/webhook", async (request: Request, response: Response) => {
             ? await userExistsInDB(phoneNumber)
             : usersConversation;
         //if usersDBRecord doesn't exist and users local conversation isn't available then user isnt recognized as a student
-        console.log("this is the data", usersDBRecord);
+        console.log("userDBrecord", usersDBRecord);
         const usrMsgData: usersMsgData = {
           usrSentence: usersText,
           usrSentenceID: msgID,
@@ -97,7 +97,7 @@ app.post("/webhook", async (request: Request, response: Response) => {
           usersWhatsappName: usersWhatsappName,
           userHasLocalConversation: userHasLocalConversation !== undefined,
         };
-        console.log("conversations", conversationsStore);
+        // console.log("conversations", conversationsStore);
         if (usersDBRecord === undefined) {
           const reply = await chatBot.processKeyword(
             "introMessage",
@@ -132,7 +132,7 @@ app.post("/webhook", async (request: Request, response: Response) => {
             ? await userExistsInDB(phoneNumber)
             : usersConversation;
         //if usersDBRecord doesn't exist and users local conversation isn't available then user isnt recognized as a student
-        console.log("this is the data", usersDBRecord);
+        // console.log("this is the data", usersDBRecord);
         const usrMsgData: usersMsgData = {
           usrSentence: usersText,
           usersWhatsappName: usersWhatsappName,
@@ -141,13 +141,14 @@ app.post("/webhook", async (request: Request, response: Response) => {
           sentenceUsrIsReplyingID: contextId,
           userHasLocalConversation: userHasLocalConversation !== undefined,
         };
-        console.log("these are the conversations", conversationsStore);
+        // console.log("these are the conversations", conversationsStore);
         //check if the user replied with an option ***
         if (usersDBRecord) {
           let selectedOption = chatBot.selectedOption(
             usersDBRecord,
             usrMsgData
           );
+          console.log(selectedOption);
           const reply = await chatBot.processKeyword(
             selectedOption,
             usrMsgData

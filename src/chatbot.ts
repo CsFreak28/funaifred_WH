@@ -67,6 +67,7 @@ export default class ChatBot {
         sentence.msgId === usersMsgData.sentenceUsrIsReplyingID &&
           (sentenceUserReplied = sentence);
       });
+      console.log("sentenceUserReplied", sentenceUserReplied);
       if (sentenceUserReplied) {
         selectedOption =
           sentenceUserReplied.options !== null
@@ -75,6 +76,7 @@ export default class ChatBot {
             ? sentenceUserReplied.freeReply
             : undefined;
       }
+      console.log("selectedOption", selectedOption);
       return selectedOption;
     } else {
       //if users msg doesnt have a context id, then he may be replying to the lastbotSentence

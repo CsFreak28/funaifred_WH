@@ -14,10 +14,10 @@ export function userExistsInDB(phoneNumber) {
         //get the users record from firebase
         const docRef = doc(db, "conversations", `${phoneNumber}`);
         const docSnap = yield getDoc(docRef);
-        let usersDBRecoord;
+        let usersDBRecord = undefined;
         if (docSnap.exists()) {
-            usersDBRecoord = docSnap.data().conversation;
+            usersDBRecord = docSnap.data().conversation;
         }
-        return userExistsInDB;
+        return usersDBRecord;
     });
 }

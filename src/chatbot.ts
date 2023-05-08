@@ -63,7 +63,7 @@ export default class ChatBot {
       let previousSentences = conversation.previousSentences;
       let sentenceUserReplied: sentenceInterface | undefined;
       let selectedOption: string | undefined | { replyTo: string };
-      console.log("previous sentenceID", previousSentences[0].msgID);
+      console.log("previous sentenceID", previousSentences);
       console.log(
         "current sentenceReplyID",
         usersMsgData.sentenceUsrIsReplyingID

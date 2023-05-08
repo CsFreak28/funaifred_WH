@@ -66,10 +66,7 @@ app.post("/webhook", async (request: Request, response: Response) => {
     ) {
       let messageType = request.body.entry[0].changes[0].value.messages[0].type;
       let phoneNumber = request.body.entry[0].changes[0].value.messages[0].from;
-      console.log(
-        "this is the request stuff",
-        request.body.entry[0].changes[0].value
-      );
+      console.log("this is the request stuff", request.body.entry[0]);
       let contextId =
         request.body.entry[0].changes[0].value.messages[0].context == undefined
           ? undefined

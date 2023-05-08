@@ -137,7 +137,7 @@ app.post("/webhook", async (request: Request, response: Response) => {
           sentenceUsrIsReplyingID: contextId,
           userHasLocalConversation: userHasLocalConversation !== undefined,
         };
-        console.log("conversations", conversationsStore);
+        console.log("these are the conversations", conversationsStore);
         //check if the user replied with an option ***
         if (usersDBRecord) {
           let selectedOption = chatBot.selectedOption(

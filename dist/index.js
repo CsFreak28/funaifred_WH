@@ -93,7 +93,8 @@ app.post("/webhook", (request, response) => __awaiter(void 0, void 0, void 0, fu
                     sentenceUsrIsReplyingID: contextId,
                 };
                 if (usersDBRecord === undefined) {
-                    chatBot.processKeyword("userDoesntExist", usrMsgData);
+                    const reply = chatBot.processKeyword("userDoesntExist", usrMsgData);
+                    chatBot.reply(request, reply);
                 }
                 else if (usersDBRecord !== undefined &&
                     (yield textIsAGreeting(usersText))) {

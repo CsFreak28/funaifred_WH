@@ -39,36 +39,40 @@ export default async function replySentenceWithText(
   } else if (typeof reply.message === "object") {
     reply.message.forEach(async (message, i) => {
       if (typeof message !== "object") {
-        await axios({
-          method: "POST", // Required, HTTP method, a string, e.g. POST, GET
-          url:
-            "https://graph.facebook.com/v15.0/" + phone_number_id + "/messages",
-          data: {
-            messaging_product: "whatsapp",
-            context: reply.contextId
-              ? {
-                  message_id: reply.contextId,
-                }
-              : undefined,
-            to: from,
-            text: { body: `${message}` },
-          },
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-        })
-          .then((response) => {
-            if (i === reply.message.length - 1) {
-              let msgID = response.data.messages[0].id;
-              console.log("the msgID", msgID);
-              setConversationID(from, msgID);
-            }
+        setTimeout(async () => {
+          await axios({
+            method: "POST", // Required, HTTP method, a string, e.g. POST, GET
+            url:
+              "https://graph.facebook.com/v15.0/" +
+              phone_number_id +
+              "/messages",
+            data: {
+              messaging_product: "whatsapp",
+              context: reply.contextId
+                ? {
+                    message_id: reply.contextId,
+                  }
+                : undefined,
+              to: from,
+              text: { body: `${message}` },
+            },
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`,
+            },
           })
-          .catch(() => {
-            console.log(token);
-            console.log("error replying with text");
-          });
+            .then((response) => {
+              if (i === reply.message.length - 1) {
+                let msgID = response.data.messages[0].id;
+                console.log("the msgID", msgID);
+                setConversationID(from, msgID);
+              }
+            })
+            .catch(() => {
+              console.log(token);
+              console.log("error replying with text");
+            });
+        }, 500);
       } else if (message.typeOfReply === "interactive") {
         setTimeout(async () => {
           console.log("sent out");

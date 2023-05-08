@@ -44,35 +44,39 @@ export default function replySentenceWithText(request, reply) {
         else if (typeof reply.message === "object") {
             reply.message.forEach((message, i) => __awaiter(this, void 0, void 0, function* () {
                 if (typeof message !== "object") {
-                    yield axios({
-                        method: "POST",
-                        url: "https://graph.facebook.com/v15.0/" + phone_number_id + "/messages",
-                        data: {
-                            messaging_product: "whatsapp",
-                            context: reply.contextId
-                                ? {
-                                    message_id: reply.contextId,
-                                }
-                                : undefined,
-                            to: from,
-                            text: { body: `${message}` },
-                        },
-                        headers: {
-                            "Content-Type": "application/json",
-                            Authorization: `Bearer ${token}`,
-                        },
-                    })
-                        .then((response) => {
-                        if (i === reply.message.length - 1) {
-                            let msgID = response.data.messages[0].id;
-                            console.log("the msgID", msgID);
-                            setConversationID(from, msgID);
-                        }
-                    })
-                        .catch(() => {
-                        console.log(token);
-                        console.log("error replying with text");
-                    });
+                    setTimeout(() => __awaiter(this, void 0, void 0, function* () {
+                        yield axios({
+                            method: "POST",
+                            url: "https://graph.facebook.com/v15.0/" +
+                                phone_number_id +
+                                "/messages",
+                            data: {
+                                messaging_product: "whatsapp",
+                                context: reply.contextId
+                                    ? {
+                                        message_id: reply.contextId,
+                                    }
+                                    : undefined,
+                                to: from,
+                                text: { body: `${message}` },
+                            },
+                            headers: {
+                                "Content-Type": "application/json",
+                                Authorization: `Bearer ${token}`,
+                            },
+                        })
+                            .then((response) => {
+                            if (i === reply.message.length - 1) {
+                                let msgID = response.data.messages[0].id;
+                                console.log("the msgID", msgID);
+                                setConversationID(from, msgID);
+                            }
+                        })
+                            .catch(() => {
+                            console.log(token);
+                            console.log("error replying with text");
+                        });
+                    }), 500);
                 }
                 else if (message.typeOfReply === "interactive") {
                     setTimeout(() => __awaiter(this, void 0, void 0, function* () {

@@ -68,7 +68,6 @@ app.post("/webhook", async (request: Request, response: Response) => {
       let phoneNumber = request.body.entry[0].changes[0].value.messages[0].from;
       let usersWhatsappName =
         request.body.entry[0].changes[0].value.contacts[0].profile.name;
-      console.log("this is the request stuff", request.body);
       let contextId =
         request.body.entry[0].changes[0].value.messages[0].context == undefined
           ? undefined

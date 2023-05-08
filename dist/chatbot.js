@@ -46,6 +46,7 @@ export default class ChatBot {
                 let previousSentences = conversation.previousSentences;
                 let sentenceUserReplied;
                 let selectedOption;
+                console.log("previous sentences", previousSentences);
                 previousSentences === null || previousSentences === void 0 ? void 0 : previousSentences.forEach((sentence) => {
                     sentence.msgId === usersMsgData.sentenceUsrIsReplyingID &&
                         (sentenceUserReplied = sentence);

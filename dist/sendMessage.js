@@ -76,7 +76,7 @@ export default function replySentenceWithText(request, reply) {
                             console.log(token);
                             console.log("error replying with text");
                         });
-                    }), 500);
+                    }), 500 * i);
                 }
                 else if (message.typeOfReply === "interactive") {
                     setTimeout(() => __awaiter(this, void 0, void 0, function* () {

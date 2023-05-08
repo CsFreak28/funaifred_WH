@@ -72,7 +72,7 @@ export default async function replySentenceWithText(
               console.log(token);
               console.log("error replying with text");
             });
-        }, 500);
+        }, 500 * i);
       } else if (message.typeOfReply === "interactive") {
         setTimeout(async () => {
           console.log("sent out");

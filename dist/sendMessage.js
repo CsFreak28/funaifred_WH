@@ -44,6 +44,7 @@ export default function replySentenceWithText(request, reply) {
         }
         else if (typeof reply.message === "object") {
             reply.message.forEach((message, i) => __awaiter(this, void 0, void 0, function* () {
+                let contextId = reply.contextId;
                 if (typeof message !== "object") {
                     setTimeout(() => __awaiter(this, void 0, void 0, function* () {
                         yield axios({
@@ -71,6 +72,7 @@ export default function replySentenceWithText(request, reply) {
                                 let msgID = response.data.messages[0].id;
                                 console.log("the msgID", msgID);
                                 setConversationID(from, msgID);
+                                contextId = msgID;
                             }
                         })
                             .catch(() => {
@@ -86,6 +88,7 @@ export default function replySentenceWithText(request, reply) {
                         let msgID = response.data.messages[0].id;
                         console.log("the msgID", msgID);
                         setConversationID(from, msgID);
+                        contextId = msgID;
                     }), 500);
                 }
             }));

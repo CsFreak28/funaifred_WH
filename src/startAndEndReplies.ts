@@ -17,14 +17,14 @@ export const startAndEndReplies = {
     let option2 = "No, I'm not";
     let randomEmoji = emojis[Math.floor(Number(Math.random) * emojis.length)];
     let greetingMessage = await generateMessage(
-      `write a short 50 words introduction message from a chatbot named Fred to it's master named ${usersMsgData.usersWhatsappName}, telling him that he is a chatbot built to serve students of Federal University Ndufu Alike Ikwo, add this ${randomEmoji} emoji after metioning ${usersMsgData.usersWhatsappName}'s name`
+      `write a short 50 words introduction message from a chatbot named Fred to it's master named ${usersMsgData.usersWhatsappName}, telling him that he is a chatbot built to serve students of Federal University Ndufu Alike Ikwo, add this ${randomEmoji} emoji after metioning ${usersMsgData.usersWhatsappName}'s name and don't ask ${usersMsgData.usersWhatsappName} how you can help him`
     );
     let reply: reply = {
       contextId: usersMsgData.sentenceUsrIsReplyingID,
       message: [
         greetingMessage,
         {
-          message: "Are you a student of FUNAI?",
+          message: "But first of all, are you a student of FUNAI?",
           typeOfReply: "interactive",
           options: {
             firstButtonText: {
@@ -59,8 +59,8 @@ export const startAndEndReplies = {
     let userProfile = await userExistsInDB(usersMsgData.usrPhoneNumber);
     let reply: reply;
     let lastBotSentence: sentenceInterface;
-    let option1 = "Yes";
-    let option2 = "No";
+    let option1 = "Yes ✅";
+    let option2 = "No ❌";
     if (userProfile) {
       reply = {
         message: "user document found",
@@ -78,7 +78,7 @@ export const startAndEndReplies = {
         contextId: usersMsgData.usrSentenceID,
         message: [
           "I just finished searching my database for your information, i did'nt find anything 😔.",
-          "but you can give me your full name and i will send it to Benjamin(course rep of 200 level computer science) \n to confirm if you're in his department",
+          "but you can give me your *LEVEL* and *DEPARTMENT* and i will confirm from the course rep if you're in the department \n write the department and level in this format \n *Computer science 100 level* or \n *CSC 100* or \n *I am in computer science department, 100 lvl* \n basically anyhow you like 🤗",
         ],
       };
       lastBotSentence = {

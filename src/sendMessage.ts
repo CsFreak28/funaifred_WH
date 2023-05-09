@@ -39,6 +39,7 @@ export default async function replySentenceWithText(
     setConversationID(from, msgID);
   } else if (typeof reply.message === "object") {
     reply.message.forEach(async (message, i) => {
+      let contextId = reply.contextId;
       if (typeof message !== "object") {
         setTimeout(async () => {
           await axios({
@@ -67,6 +68,7 @@ export default async function replySentenceWithText(
                 let msgID = response.data.messages[0].id;
                 console.log("the msgID", msgID);
                 setConversationID(from, msgID);
+                contextId = msgID;
               }
             })
             .catch(() => {
@@ -82,6 +84,7 @@ export default async function replySentenceWithText(
           let msgID = response.data.messages[0].id;
           console.log("the msgID", msgID);
           setConversationID(from, msgID);
+          contextId = msgID;
         }, 500);
       }
     });

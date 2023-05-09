@@ -61,6 +61,8 @@ export default async function replySentenceWithText(
       .then(async (response) => {
         let msgID = response.data.messages[0].id;
         if (typeof secondMessage === "object") {
+          replySentenceWithInteractive(request, secondMessage);
+        } else {
           await axios({
             method: "POST", // Required, HTTP method, a string, e.g. POST, GET
             url:
@@ -73,7 +75,7 @@ export default async function replySentenceWithText(
                 message_id: msgID,
               },
               to: from,
-              text: { body: `${secondMessage.message}` },
+              text: { body: `${secondMessage}` },
             },
             headers: {
               "Content-Type": "application/json",

@@ -66,6 +66,9 @@ export default function replySentenceWithText(request, reply) {
                 .then((response) => __awaiter(this, void 0, void 0, function* () {
                 let msgID = response.data.messages[0].id;
                 if (typeof secondMessage === "object") {
+                    replySentenceWithInteractive(request, secondMessage);
+                }
+                else {
                     yield axios({
                         method: "POST",
                         url: "https://graph.facebook.com/v15.0/" +
@@ -77,7 +80,7 @@ export default function replySentenceWithText(request, reply) {
                                 message_id: msgID,
                             },
                             to: from,
-                            text: { body: `${secondMessage.message}` },
+                            text: { body: `${secondMessage}` },
                         },
                         headers: {
                             "Content-Type": "application/json",

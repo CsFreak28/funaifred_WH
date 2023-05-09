@@ -35,13 +35,32 @@ export default async function replySentenceWithText(
       console.log("error replying with text");
     });
     let msgID = response.data.messages[0].id;
-    console.log("the msgID", msgID);
+    // console.log("the msgID", msgID);
     setConversationID(from, msgID);
   } else if (typeof reply.message === "object") {
-    reply.message.forEach(async (message, i) => {
-      let contextId = reply.contextId;
-      if (typeof message !== "object") {
-        setTimeout(async () => {
+    let firstMessage = reply.message[0];
+    let secondMessage = reply.message[1];
+    await axios({
+      method: "POST", // Required, HTTP method, a string, e.g. POST, GET
+      url: "https://graph.facebook.com/v15.0/" + phone_number_id + "/messages",
+      data: {
+        messaging_product: "whatsapp",
+        context: reply.contextId
+          ? {
+              message_id: reply.contextId,
+            }
+          : undefined,
+        to: from,
+        text: { body: `${firstMessage}` },
+      },
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    })
+      .then(async (response) => {
+        let msgID = response.data.messages[0].id;
+        if (typeof secondMessage === "object") {
           await axios({
             method: "POST", // Required, HTTP method, a string, e.g. POST, GET
             url:
@@ -50,44 +69,23 @@ export default async function replySentenceWithText(
               "/messages",
             data: {
               messaging_product: "whatsapp",
-              context: reply.contextId
-                ? {
-                    message_id: reply.contextId,
-                  }
-                : undefined,
+              context: {
+                message_id: msgID,
+              },
               to: from,
-              text: { body: `${message}` },
+              text: { body: `${secondMessage}` },
             },
             headers: {
               "Content-Type": "application/json",
               Authorization: `Bearer ${token}`,
             },
-          })
-            .then((response) => {
-              if (i === reply.message.length - 1) {
-                let msgID = response.data.messages[0].id;
-                console.log("the msgID", msgID);
-                setConversationID(from, msgID);
-                contextId = msgID;
-              }
-            })
-            .catch(() => {
-              console.log(token);
-              console.log("error replying with text");
-            });
-        }, 500 * i);
-      } else if (message.typeOfReply === "interactive") {
-        setTimeout(async () => {
-          console.log("sent out");
-          const response: AxiosResponse | string | any =
-            await replySentenceWithInteractive(request, message);
-          let msgID = response.data.messages[0].id;
-          console.log("the msgID", msgID);
-          setConversationID(from, msgID);
-          contextId = msgID;
-        }, 500);
-      }
-    });
+          });
+        }
+      })
+      .catch(() => {
+        console.log(token);
+        console.log("error replying with text");
+      });
   }
   return response;
 }

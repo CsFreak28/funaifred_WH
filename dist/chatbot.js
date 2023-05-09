@@ -9,6 +9,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 import { noExistuserReplies } from "./noExistUser.js";
 import { paymentReplies } from "./paymentReplies.js";
+import { adminReplies } from "./adminReplies.js";
 import { startAndEndReplies } from "./startAndEndReplies.js";
 import replySentenceWithText, { replySentenceWithInteractive, } from "./sendMessage.js";
 export default class ChatBot {
@@ -75,7 +76,7 @@ export default class ChatBot {
                 return selectedOption;
             }
         };
-        this.chatBotFunctions = Object.assign(Object.assign(Object.assign({}, paymentReplies), noExistuserReplies), startAndEndReplies);
+        this.chatBotFunctions = Object.assign(Object.assign(Object.assign(Object.assign({}, paymentReplies), noExistuserReplies), startAndEndReplies), adminReplies);
     }
 }
 export function chatBotDates() {

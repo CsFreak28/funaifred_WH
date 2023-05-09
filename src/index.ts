@@ -3,8 +3,9 @@ import dotenv from "dotenv";
 import { userExistsInDB } from "./db.js";
 import {
   textIsAGreeting,
-  userExistsInLocalConversations,
-} from "./helperFunctions.js";
+  findMeaning,
+  whichDepartmentAndLevel,
+} from "./chatGpt.js";
 import { conversationsStore, getConversation } from "./store.js";
 import bodyParser, { text } from "body-parser";
 import { conversation, conversations, usersMsgData } from "./interfaces.js";
@@ -24,6 +25,8 @@ const chatBot = new ChatBot();
 app.get("/", async (request: Request, response: Response) => {
   response.status(200);
   textIsAGreeting("hello");
+  findMeaning("how do i pay for gst");
+  whichDepartmentAndLevel("i am in computer sceine, 300 level");
   response.send("i am connected");
 });
 app.get("/webhook", (request: Request, response: Response) => {

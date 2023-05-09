@@ -77,7 +77,7 @@ export default function replySentenceWithText(request, reply) {
                                 message_id: msgID,
                             },
                             to: from,
-                            text: { body: `${secondMessage}` },
+                            text: { body: `${secondMessage.message}` },
                         },
                         headers: {
                             "Content-Type": "application/json",

@@ -73,7 +73,7 @@ export default async function replySentenceWithText(
                 message_id: msgID,
               },
               to: from,
-              text: { body: `${secondMessage}` },
+              text: { body: `${secondMessage.message}` },
             },
             headers: {
               "Content-Type": "application/json",

@@ -70,6 +70,7 @@ export default function replySentenceWithText(request, reply) {
                     if (typeof secondMessage === "object") {
                         let response = yield replySentenceWithInteractive(request, secondMessage);
                         let msgID = response.data.messages[0].id;
+                        setConversationID(from, msgID);
                     }
                     else {
                         let response = yield axios({

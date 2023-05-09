@@ -68,6 +68,7 @@ export default async function replySentenceWithText(
               secondMessage
             );
             let msgID = response.data.messages[0].id;
+            setConversationID(from, msgID);
           } else {
             let response = await axios({
               method: "POST", // Required, HTTP method, a string, e.g. POST, GET

@@ -4,7 +4,7 @@ import {
   reply,
   conversation,
 } from "./interfaces.js";
-import { generateMessage } from "./chatGpt.js";
+import { generateMessage, whichDepartmentAndLevel } from "./chatGpt.js";
 import { userExistsInDB } from "./db.js";
 import { chatBotDates } from "./chatbot.js";
 import { addConversation, addLastSentenceToConversation } from "./store.js";
@@ -93,14 +93,15 @@ export const startAndEndReplies = {
     addLastSentenceToConversation(usersMsgData.usrPhoneNumber, lastBotSentence);
     return reply;
   },
-  confirmAcctFromCR: (usersMsgData: usersMsgData) => {
+  confirmAcctFromCR: async (usersMsgData: usersMsgData) => {
+    let deptAndLevel = await whichDepartmentAndLevel(usersMsgData.usrSentence);
     let courseRepsName = "Benjamin";
     let deptName = "CSC";
     let option1 = "Yes ✅";
     let option2 = "No ❌";
     let reply: reply = {
       message: [
-        `Your name "*${usersMsgData.usersWhatsappName}*" will be sent to *${courseRepsName}*, the course Rep of ${deptName} department\n to confirm that you are in ${deptName} department`,
+        `Your name *"${usersMsgData.usersWhatsappName}"* will be sent to *${courseRepsName}*, \n (The course Rep of ${deptName} department) \n to confirm that you are in ${deptAndLevel} department`,
         {
           message: "Would you like to change your Name or Department ?",
           typeOfReply: "interactive",
@@ -111,7 +112,7 @@ export const startAndEndReplies = {
             },
             secondbutton: {
               message: option2,
-              id: "230",
+              id: "220",
             },
           },
         },

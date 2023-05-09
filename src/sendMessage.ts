@@ -60,28 +60,34 @@ export default async function replySentenceWithText(
     })
       .then(async (response) => {
         let msgID = response.data.messages[0].id;
-        if (typeof secondMessage === "object") {
-          replySentenceWithInteractive(request, secondMessage);
-        } else {
-          await axios({
-            method: "POST", // Required, HTTP method, a string, e.g. POST, GET
-            url:
-              "https://graph.facebook.com/v15.0/" +
-              phone_number_id +
-              "/messages",
-            data: {
-              messaging_product: "whatsapp",
-              context: {
-                message_id: msgID,
+        setConversationID(from, msgID);
+        if (secondMessage !== undefined) {
+          let msgID = response.data.messages[0].id;
+          if (typeof secondMessage === "object") {
+            replySentenceWithInteractive(request, secondMessage);
+          } else {
+            let response = await axios({
+              method: "POST", // Required, HTTP method, a string, e.g. POST, GET
+              url:
+                "https://graph.facebook.com/v15.0/" +
+                phone_number_id +
+                "/messages",
+              data: {
+                messaging_product: "whatsapp",
+                context: {
+                  message_id: msgID,
+                },
+                to: from,
+                text: { body: `${secondMessage}` },
               },
-              to: from,
-              text: { body: `${secondMessage}` },
-            },
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: `Bearer ${token}`,
-            },
-          });
+              headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${token}`,
+              },
+            });
+            let msgID2 = response.data.messages[0].id;
+            setConversationID(from, msgID2);
+          }
         }
       })
       .catch(() => {

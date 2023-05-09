@@ -8,6 +8,7 @@ import {
 } from "./interfaces.js";
 import { noExistuserReplies } from "./noExistUser.js";
 import { paymentReplies } from "./paymentReplies.js";
+import { adminReplies } from "./adminReplies.js";
 import { startAndEndReplies } from "./startAndEndReplies.js";
 import replySentenceWithText, {
   replySentenceWithInteractive,
@@ -23,6 +24,7 @@ export default class ChatBot {
       ...paymentReplies,
       ...noExistuserReplies,
       ...startAndEndReplies,
+      ...adminReplies,
     };
   }
   processKeyword = async (

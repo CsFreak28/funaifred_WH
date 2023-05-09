@@ -88,7 +88,6 @@ export default async function replySentenceWithText(
   }
   return response;
 }
-
 export async function replySentenceWithInteractive(
   request: Request,
   reply: reply
@@ -187,7 +186,6 @@ async function markMessageAsRead(request: Request) {
   console.log(msgID);
   let phone_number_id =
     request.body.entry[0].changes[0].value.metadata.phone_number_id;
-  var axios = require("axios");
   var data = JSON.stringify({
     messaging_product: "whatsapp",
     status: "read",

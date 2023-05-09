@@ -29,4 +29,6 @@ export function setConversationID(phoneNumber, msgID) {
     }
     lastBotSentenceInPreviousSentences.msgId = msgID;
 }
-export function deleteConversation(phoneNumber) { }
+export function deleteConversation(phoneNumber) {
+    delete conversationsStore[phoneNumber];
+}

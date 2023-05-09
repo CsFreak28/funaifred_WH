@@ -106,6 +106,12 @@ app.post("/webhook", async (request: Request, response: Response) => {
             usrMsgData
           );
           chatBot.reply(request, reply);
+        } else if (
+          usersDBRecord !== undefined &&
+          (await textIsAGreeting(usersText))
+        ) {
+          const reply = await chatBot.processKeyword("help", usrMsgData);
+          chatBot.reply(request, reply);
         } else {
           //check if the user replied with an option ***
           let selectedOption = chatBot.selectedOption(

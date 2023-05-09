@@ -80,7 +80,7 @@ export const startAndEndReplies = {
                 contextId: usersMsgData.usrSentenceID,
                 message: [
                     "I just finished searching my database for your information, i did'nt find anything 😔.",
-                    "but you can give me your *LEVEL* and *DEPARTMENT* and i will confirm from the course rep if you're in the department \n write the department and level in this format \n *Computer science 100 level* or \n *CSC 100* or \n *I am in computer science department, 100 lvl* \n basically anyhow you like 🤗",
+                    "but you can give me your *LEVEL* and *DEPARTMENT* and i will confirm from the course rep if you're in the department, \n write the department and level in this format \n *Computer science 100 level* or \n *CSC 100* or \n *I am in computer science department, 100 lvl* \n basically send it to me anyhow you like 🤗",
                 ],
             };
             lastBotSentence = {
@@ -97,11 +97,34 @@ export const startAndEndReplies = {
     confirmAcctFromCR: (usersMsgData) => {
         let courseRepsName = "Benjamin";
         let deptName = "CSC";
+        let option1 = "Yes ✅";
+        let option2 = "No ❌";
         let reply = {
             message: [
-                `Your fullname *${usersMsgData}* will be sent to *${courseRepsName}* \n to confirm that you are a student of ${deptName}`,
+                `Your name "*${usersMsgData.usersWhatsappName}*" will be sent to *${courseRepsName}*, the course Rep of ${deptName} department\n to confirm that you are in ${deptName} department`,
+                {
+                    message: "Would you like to change your Name or Department ?",
+                    typeOfReply: "interactive",
+                    options: {
+                        firstbutton: {
+                            message: option1,
+                            id: "230",
+                        },
+                        secondbutton: {
+                            message: option2,
+                            id: "230",
+                        },
+                    },
+                },
             ],
             contextId: usersMsgData.usrSentenceID,
+        };
+        let lastBotSentence = {
+            msgId: "",
+            options: {
+                [option1]: "changeCourseRepConfirmDetails",
+                [option2]: "sentToCourseRep",
+            },
         };
         return reply;
     },
@@ -109,6 +132,12 @@ export const startAndEndReplies = {
         let reply = {
             message: "I was not built for non students",
             contextId: usersMsgData.usrSentenceID,
+        };
+        return reply;
+    },
+    help: (usersMsgData) => {
+        let reply = {
+            message: "How can i help you boss ?",
         };
         return reply;
     },

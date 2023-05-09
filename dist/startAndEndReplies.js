@@ -64,7 +64,7 @@ export const startAndEndReplies = {
         let option2 = "No ❌";
         if (userProfile) {
             reply = {
-                message: "user document found",
+                message: "user document found just now",
                 contextId: usersMsgData.usrSentenceID,
             };
             lastBotSentence = {

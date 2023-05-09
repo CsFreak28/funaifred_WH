@@ -10,7 +10,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 import express from "express";
 import dotenv from "dotenv";
 import { userExistsInDB } from "./db.js";
-import { textIsAGreeting, } from "./helperFunctions.js";
+import { textIsAGreeting, findMeaning, whichDepartmentAndLevel, } from "./chatGpt.js";
 import { getConversation } from "./store.js";
 import bodyParser from "body-parser";
 import ChatBot from "./chatbot.js";
@@ -27,6 +27,8 @@ const chatBot = new ChatBot();
 app.get("/", (request, response) => __awaiter(void 0, void 0, void 0, function* () {
     response.status(200);
     textIsAGreeting("hello");
+    findMeaning("how do i pay for gst");
+    whichDepartmentAndLevel("i am in computer sceine, 300 level");
     response.send("i am connected");
 }));
 app.get("/webhook", (request, response) => {

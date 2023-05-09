@@ -7,19 +7,23 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+import { generateMessage } from "./chatGpt.js";
 import { userExistsInDB } from "./db.js";
 import { chatBotDates } from "./chatbot.js";
 import { addConversation, addLastSentenceToConversation } from "./store.js";
+let emojis = ["❤️", "👑", "💫", "👋", "💯", "🌈"];
 export const startAndEndReplies = {
-    introMessage: (usersMsgData) => {
+    introMessage: (usersMsgData) => __awaiter(void 0, void 0, void 0, function* () {
         //if user did not greet first, "payments??", funny way to start a conversation 😅
         const newChatBotDates = chatBotDates();
         let option1 = "Yes I, am";
         let option2 = "No, I'm not";
+        let randomEmoji = emojis[Math.floor(Number(Math.random) * emojis.length)];
+        let greetingMessage = yield generateMessage(`write a short 50 words introduction message from a chatbot named Fred to it's master named ${usersMsgData.usersWhatsappName}, telling him that he is a chatbot built to serve students of Federal University Ndufu Alike Ikwo, add this ${randomEmoji} emoji after metioning ${usersMsgData.usersWhatsappName}'s name`);
         let reply = {
             contextId: usersMsgData.sentenceUsrIsReplyingID,
             message: [
-                `Hey there ${usersMsgData.usersWhatsappName}`,
+                greetingMessage,
                 {
                     message: "Are you a student of FUNAI?",
                     typeOfReply: "interactive",
@@ -51,7 +55,7 @@ export const startAndEndReplies = {
         };
         addConversation(usersMsgData.usrPhoneNumber, conversation);
         return reply;
-    },
+    }),
     checkIfUserIsAStudent: (usersMsgData) => __awaiter(void 0, void 0, void 0, function* () {
         let userProfile = yield userExistsInDB(usersMsgData.usrPhoneNumber);
         let reply;
@@ -75,8 +79,8 @@ export const startAndEndReplies = {
             reply = {
                 contextId: usersMsgData.usrSentenceID,
                 message: [
-                    "I just finished searching our database for your information, nothing there about you",
-                    "give me your real name and i will send it to Benjamin(course rep of 200level computer science) to confirm if you're in his department",
+                    "I just finished searching my database for your information, i did'nt find anything 😔.",
+                    "but you can give me your full name and i will send it to Benjamin(course rep of 200 level computer science) \n to confirm if you're in his department",
                 ],
             };
             lastBotSentence = {
@@ -91,8 +95,12 @@ export const startAndEndReplies = {
         return reply;
     }),
     confirmAcctFromCR: (usersMsgData) => {
+        let courseRepsName = "Benjamin";
+        let deptName = "CSC";
         let reply = {
-            message: "Your details will be confirmed by the course rep of this department",
+            message: [
+                `Your fullname *${usersMsgData}* will be sent to *${courseRepsName}* \n to confirm that you are a student of ${deptName}`,
+            ],
             contextId: usersMsgData.usrSentenceID,
         };
         return reply;

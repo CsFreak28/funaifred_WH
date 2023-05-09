@@ -17,10 +17,12 @@ export interface reply {
   contextId?: string;
   type?: "interactive" | "list";
   options?: {
-    [key: string]: {
-      message: string;
-      id: string;
-    };
+    [key: string]:
+      | {
+          message: string;
+          id: string;
+        }
+      | listReply;
   };
   message:
     | string
@@ -30,10 +32,12 @@ export interface reply {
             message: string;
             typeOfReply: "interactive" | "list";
             options?: {
-              [key: string]: {
-                message: string;
-                id: string;
-              };
+              [key: string]:
+                | {
+                    message: string;
+                    id: string;
+                  }
+                | listReply;
             };
           }
       >;
@@ -71,4 +75,22 @@ export interface conversation {
 }
 export interface conversations {
   [key: string]: conversation;
+}
+interface listItemOption {
+  id: string;
+  title: string;
+}
+interface listItem {
+  title: string;
+  rows: Array<listItemOption>;
+}
+export interface listReply {
+  message?: string;
+  id: string;
+  headers: {
+    header: string;
+    body: string;
+    button: string;
+    listItems: Array<listItem>;
+  };
 }

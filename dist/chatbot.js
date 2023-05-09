@@ -78,9 +78,6 @@ export default class ChatBot {
         this.chatBotFunctions = Object.assign(Object.assign(Object.assign({}, paymentReplies), noExistuserReplies), startAndEndReplies);
     }
 }
-// const chatBotDate = chatBotDates();
-// let timeStamp = chatBotDate.getTimeStamp();
-// let currentDateOfConv = chatBotDate.getCurrentDate();
 export function chatBotDates() {
     return {
         getCurrentDate: () => {

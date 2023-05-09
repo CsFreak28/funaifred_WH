@@ -1,12 +1,13 @@
-import axios, { AxiosResponse } from "axios";
+import axios, { AxiosError, AxiosResponse } from "axios";
 import { Request } from "express";
-import { reply } from "./interfaces.js";
+import { reply, listReply } from "./interfaces.js";
 import { setConversationID } from "./store.js";
 const token = process.env.WHATSAPP_TOKEN;
 export default async function replySentenceWithText(
   request: Request,
   reply: reply
 ) {
+  markMessageAsRead(request);
   let phone_number_id =
     request.body.entry[0].changes[0].value.metadata.phone_number_id;
   let from = request.body.entry[0].changes[0].value.messages[0].from; // extract the phone number from the webhook payload
@@ -92,6 +93,7 @@ export async function replySentenceWithInteractive(
   request: Request,
   reply: reply
 ) {
+  markMessageAsRead(request);
   let phone_number_id =
     request.body.entry[0].changes[0].value.metadata.phone_number_id;
   let from = request.body.entry[0].changes[0].value.messages[0].from;
@@ -136,4 +138,77 @@ export async function replySentenceWithInteractive(
       console.log("this is the error oo", e);
     });
   return response;
+}
+
+export async function replySentenceWithList(
+  request: Request,
+  listReply: listReply
+) {
+  let msgID = request.body.entry[0].changes[0].value.messages[0].id;
+  let phone_number_id =
+    request.body.entry[0].changes[0].value.metadata.phone_number_id;
+  let from = request.body.entry[0].changes[0].value.messages[0].from;
+
+  let response = await axios({
+    method: "POST",
+    url: "https://graph.facebook.com/v15.0/" + phone_number_id + "/messages",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: "Bearer " + token,
+    },
+    data: {
+      messaging_product: "whatsapp",
+      recipient_type: "individual",
+      to: from,
+      type: "interactive",
+      interactive: {
+        type: "list",
+        header: {
+          type: "text",
+          text: listReply.headers.header,
+        },
+        body: {
+          text: listReply.headers.body,
+        },
+        action: {
+          button: listReply.headers.button,
+          sections: listReply.headers.listItems,
+        },
+      },
+    },
+  }).catch((e) => {
+    console.log("this is the sendList Error", e);
+  });
+  return response;
+}
+
+async function markMessageAsRead(request: Request) {
+  let msgID = request.body.entry[0].changes[0].value.messages[0].id;
+  console.log(msgID);
+  let phone_number_id =
+    request.body.entry[0].changes[0].value.metadata.phone_number_id;
+  var axios = require("axios");
+  var data = JSON.stringify({
+    messaging_product: "whatsapp",
+    status: "read",
+    message_id: msgID,
+  });
+
+  var config = {
+    method: "POST",
+    url: "https://graph.facebook.com/v15.0/" + phone_number_id + "/messages",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: "Bearer " + token,
+    },
+    data: data,
+  };
+
+  await axios(config)
+    .then(function (response: AxiosResponse) {
+      console.log("mark message as read, complete");
+    })
+    .catch(function (error: AxiosError) {
+      console.log(error);
+    });
 }

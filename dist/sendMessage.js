@@ -12,6 +12,7 @@ import { setConversationID } from "./store.js";
 const token = process.env.WHATSAPP_TOKEN;
 export default function replySentenceWithText(request, reply) {
     return __awaiter(this, void 0, void 0, function* () {
+        markMessageAsRead(request);
         let phone_number_id = request.body.entry[0].changes[0].value.metadata.phone_number_id;
         let from = request.body.entry[0].changes[0].value.messages[0].from; // extract the phone number from the webhook payload
         let response;
@@ -94,6 +95,7 @@ export default function replySentenceWithText(request, reply) {
 }
 export function replySentenceWithInteractive(request, reply) {
     return __awaiter(this, void 0, void 0, function* () {
+        markMessageAsRead(request);
         let phone_number_id = request.body.entry[0].changes[0].value.metadata.phone_number_id;
         let from = request.body.entry[0].changes[0].value.messages[0].from;
         let response = "";
@@ -137,5 +139,72 @@ export function replySentenceWithInteractive(request, reply) {
             console.log("this is the error oo", e);
         });
         return response;
+    });
+}
+export function replySentenceWithList(request, listReply) {
+    return __awaiter(this, void 0, void 0, function* () {
+        let msgID = request.body.entry[0].changes[0].value.messages[0].id;
+        let phone_number_id = request.body.entry[0].changes[0].value.metadata.phone_number_id;
+        let from = request.body.entry[0].changes[0].value.messages[0].from;
+        let response = yield axios({
+            method: "POST",
+            url: "https://graph.facebook.com/v15.0/" + phone_number_id + "/messages",
+            headers: {
+                "Content-Type": "application/json",
+                Authorization: "Bearer " + token,
+            },
+            data: {
+                messaging_product: "whatsapp",
+                recipient_type: "individual",
+                to: from,
+                type: "interactive",
+                interactive: {
+                    type: "list",
+                    header: {
+                        type: "text",
+                        text: listReply.headers.header,
+                    },
+                    body: {
+                        text: listReply.headers.body,
+                    },
+                    action: {
+                        button: listReply.headers.button,
+                        sections: listReply.headers.listItems,
+                    },
+                },
+            },
+        }).catch((e) => {
+            console.log("this is the sendList Error", e);
+        });
+        return response;
+    });
+}
+function markMessageAsRead(request) {
+    return __awaiter(this, void 0, void 0, function* () {
+        let msgID = request.body.entry[0].changes[0].value.messages[0].id;
+        console.log(msgID);
+        let phone_number_id = request.body.entry[0].changes[0].value.metadata.phone_number_id;
+        var axios = require("axios");
+        var data = JSON.stringify({
+            messaging_product: "whatsapp",
+            status: "read",
+            message_id: msgID,
+        });
+        var config = {
+            method: "POST",
+            url: "https://graph.facebook.com/v15.0/" + phone_number_id + "/messages",
+            headers: {
+                "Content-Type": "application/json",
+                Authorization: "Bearer " + token,
+            },
+            data: data,
+        };
+        yield axios(config)
+            .then(function (response) {
+            console.log("mark message as read, complete");
+        })
+            .catch(function (error) {
+            console.log(error);
+        });
     });
 }

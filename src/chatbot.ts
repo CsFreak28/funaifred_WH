@@ -60,6 +60,7 @@ export default class ChatBot {
   ) => {
     if (usersMsgData.sentenceUsrIsReplyingID) {
       //if the user's message has an id, check which sentence he was replying to
+
       let previousSentences = conversation.previousSentences;
       let sentenceUserReplied: sentenceInterface | undefined;
       let selectedOption: string | undefined | { replyTo: string };
@@ -97,9 +98,6 @@ export default class ChatBot {
   };
 }
 
-// const chatBotDate = chatBotDates();
-// let timeStamp = chatBotDate.getTimeStamp();
-// let currentDateOfConv = chatBotDate.getCurrentDate();
 export function chatBotDates() {
   return {
     getCurrentDate: () => {

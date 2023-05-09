@@ -35,7 +35,6 @@ export default async function replySentenceWithText(
       console.log("error replying with text");
     });
     let msgID = response.data.messages[0].id;
-    // console.log("the msgID", msgID);
     setConversationID(from, msgID);
   } else if (typeof reply.message === "object") {
     let firstMessage = reply.message[0];
@@ -64,7 +63,11 @@ export default async function replySentenceWithText(
         if (secondMessage !== undefined) {
           let msgID = response.data.messages[0].id;
           if (typeof secondMessage === "object") {
-            replySentenceWithInteractive(request, secondMessage);
+            let response = await replySentenceWithInteractive(
+              request,
+              secondMessage
+            );
+            let msgID = response.data.messages[0].id;
           } else {
             let response = await axios({
               method: "POST", // Required, HTTP method, a string, e.g. POST, GET

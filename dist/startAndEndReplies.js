@@ -21,7 +21,7 @@ export const startAndEndReplies = {
         let randomEmoji = emojis[Math.floor(Number(Math.random) * emojis.length)];
         let greetingMessage = yield generateMessage(`write a short 50 words introduction message from a chatbot named Fred to it's master named ${usersMsgData.usersWhatsappName}, telling him that he is a chatbot built to serve students of Federal University Ndufu Alike Ikwo, add this ${randomEmoji} emoji after metioning ${usersMsgData.usersWhatsappName}'s name and don't ask ${usersMsgData.usersWhatsappName} how you can help him`);
         let reply = {
-            contextId: usersMsgData.sentenceUsrIsReplyingID,
+            contextId: usersMsgData.usrSentenceID,
             message: [
                 greetingMessage,
                 {

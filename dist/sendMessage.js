@@ -9,10 +9,11 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 import axios from "axios";
 import { setConversationID } from "./store.js";
-const token = process.env.WHATSAPP_TOKEN;
 export default function replySentenceWithText(request, reply) {
     return __awaiter(this, void 0, void 0, function* () {
+        const token = process.env.WHATSAPP_TOKEN;
         markMessageAsRead(request);
+        console.log("this is the token", token);
         let phone_number_id = request.body.entry[0].changes[0].value.metadata.phone_number_id;
         let from = request.body.entry[0].changes[0].value.messages[0].from; // extract the phone number from the webhook payload
         let response;
@@ -63,24 +64,41 @@ export default function replySentenceWithText(request, reply) {
                 },
             })
                 .then((response) => __awaiter(this, void 0, void 0, function* () {
+                console.log("#debug 0: process entered the .then block");
                 let msgID = response.data.messages[0].id;
                 setConversationID(from, msgID);
                 if (secondMessage !== undefined) {
+                    console.log("#debug 1 :second message not undefined");
                     let msgID = response.data.messages[0].id;
                     if (typeof secondMessage === "object") {
-                        if (secondMessage.options &&
-                            secondMessage.options[0].typeOfReply == "interactive") {
+                        console.log("#debug 3 : second message is an object");
+                        // let john =
+                        //   secondMessage.options !== undefined &&
+                        //   secondMessage.options[0].typeOfReply === "interactive";
+                        console.log("this is john");
+                        if (secondMessage.options !== undefined &&
+                            secondMessage.options[Object.keys(secondMessage.options)[0]]
+                                .typeOfReply === "interactive") {
+                            console.log("#debug 2 :second message is an interactive Message");
                             let response = yield replySentenceWithInteractive(request, secondMessage);
                             let msgID = response.data.messages[0].id;
                             setConversationID(from, msgID);
                         }
                         else {
-                            if (secondMessage.options &&
-                                secondMessage.options[0].typeOfReply === "list") {
-                                let response = yield replySentenceWithList(request, secondMessage.options[0]);
-                                let msgID = response.data.messages[0].id;
-                                setConversationID(from, msgID);
-                            }
+                            // if (
+                            //   secondMessage.options &&
+                            //   secondMessage.options[Object.keys(secondMessage.options)[0]]
+                            //     .typeOfReply === "list"
+                            // ) {
+                            //   secondMessage.options[Object.keys(secondMessage.options)[0];
+                            //   console.log("debug #4: list reply");
+                            //   let response = await replySentenceWithList(
+                            //     request,
+                            //     secondMessage
+                            //   );
+                            //   let msgID = response.data.messages[0].id;
+                            //   setConversationID(from, msgID);
+                            // }
                         }
                     }
                     else {
@@ -107,16 +125,14 @@ export default function replySentenceWithText(request, reply) {
                     }
                 }
             }))
-                .catch(() => {
-                console.log(token);
-                console.log("error replying with text");
-            });
+                .catch(() => { });
         }
         return response;
     });
 }
 export function replySentenceWithInteractive(request, reply) {
     return __awaiter(this, void 0, void 0, function* () {
+        const token = process.env.WHATSAPP_TOKEN;
         markMessageAsRead(request);
         let phone_number_id = request.body.entry[0].changes[0].value.metadata.phone_number_id;
         let from = request.body.entry[0].changes[0].value.messages[0].from;
@@ -158,13 +174,14 @@ export function replySentenceWithInteractive(request, reply) {
             response = res;
         })
             .catch((e) => {
-            console.log("this is the error oo", e);
+            // console.log("this is the error oo", e);
         });
         return response;
     });
 }
 export function replySentenceWithList(request, listReply) {
     return __awaiter(this, void 0, void 0, function* () {
+        const token = process.env.WHATSAPP_TOKEN;
         let msgID = request.body.entry[0].changes[0].value.messages[0].id;
         let phone_number_id = request.body.entry[0].changes[0].value.metadata.phone_number_id;
         let from = request.body.entry[0].changes[0].value.messages[0].from;
@@ -197,13 +214,14 @@ export function replySentenceWithList(request, listReply) {
                 },
             },
         }).catch((e) => {
-            console.log("this is the sendList Error", e);
+            // console.log("this is the sendList Error", e);
         });
         return response;
     });
 }
 function markMessageAsRead(request) {
     return __awaiter(this, void 0, void 0, function* () {
+        const token = process.env.WHATSAPP_TOKEN;
         let msgID = request.body.entry[0].changes[0].value.messages[0].id;
         console.log(msgID);
         let phone_number_id = request.body.entry[0].changes[0].value.metadata.phone_number_id;
@@ -226,7 +244,7 @@ function markMessageAsRead(request) {
             console.log("mark message as read, complete");
         })
             .catch(function (error) {
-            console.log(error);
+            // console.log(error);
         });
     });
 }

@@ -3,20 +3,24 @@ import {
   reply,
   conversation,
   sentenceInterface,
-  option,
+  // option,
   usersMsgData,
+  listReply,
 } from "./interfaces.js";
 import { noExistuserReplies } from "./noExistUser.js";
 import { paymentReplies } from "./paymentReplies.js";
 import { adminReplies } from "./adminReplies.js";
 import { startAndEndReplies } from "./startAndEndReplies.js";
+// import { Replies } from "./types.js";
 import replySentenceWithText, {
   replySentenceWithInteractive,
 } from "./sendMessage.js";
 import { Request } from "express";
 export default class ChatBot {
   chatBotFunctions: {
-    [name: string]: (conversationData: usersMsgData) => reply | Promise<reply>;
+    [name: string]: (
+      conversationData: usersMsgData
+    ) => (reply | listReply)[] | Promise<reply[]>;
   };
   constructor() {
     this.chatBotFunctions = {
@@ -24,7 +28,7 @@ export default class ChatBot {
       ...paymentReplies,
       ...noExistuserReplies,
       ...startAndEndReplies,
-      ...adminReplies,
+      // ...adminReplies,
     };
   }
   processKeyword = async (
@@ -32,7 +36,7 @@ export default class ChatBot {
     usrsMessage: usersMsgData
   ) => {
     //use chatgpt to clean the message and find out it's category, that message belongs to
-    let reply: undefined | reply | Promise<reply>;
+    let reply: undefined | (reply | listReply)[];
     if (message !== undefined) {
       let cleanedMessage =
         typeof message === "string" ? message : message.replyTo;
@@ -44,16 +48,14 @@ export default class ChatBot {
       let noReply: reply = {
         message: ["I don't quite understand what you want me to do"],
       };
-      return noReply;
+      return [noReply];
     } else {
       return reply;
     }
   };
-  reply = (request: Request, reply: reply) => {
-    if (reply.type === undefined) {
-      replySentenceWithText(request, reply);
-    } else if (reply.type == "interactive") {
-      replySentenceWithInteractive(request, reply);
+  reply = (request: Request, replies: Array<reply | listReply>) => {
+    let length = replies.length;
+    if (length > 1) {
     }
   };
   selectedOption = (

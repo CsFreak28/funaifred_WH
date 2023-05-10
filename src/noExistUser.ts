@@ -14,6 +14,6 @@ export const noExistuserReplies = {
         "Are you a student of F.U.N.A.I ?",
       ],
     };
-    return reply;
+    return [reply];
   },
 };

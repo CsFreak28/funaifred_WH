@@ -9,9 +9,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 import { noExistuserReplies } from "./noExistUser.js";
 import { paymentReplies } from "./paymentReplies.js";
-import { adminReplies } from "./adminReplies.js";
 import { startAndEndReplies } from "./startAndEndReplies.js";
-import replySentenceWithText, { replySentenceWithInteractive, } from "./sendMessage.js";
 export default class ChatBot {
     constructor() {
         this.processKeyword = (message, usrsMessage) => __awaiter(this, void 0, void 0, function* () {
@@ -27,18 +25,15 @@ export default class ChatBot {
                 let noReply = {
                     message: ["I don't quite understand what you want me to do"],
                 };
-                return noReply;
+                return [noReply];
             }
             else {
                 return reply;
             }
         });
-        this.reply = (request, reply) => {
-            if (reply.type === undefined) {
-                replySentenceWithText(request, reply);
-            }
-            else if (reply.type == "interactive") {
-                replySentenceWithInteractive(request, reply);
+        this.reply = (request, replies) => {
+            let length = replies.length;
+            if (length > 1) {
             }
         };
         this.selectedOption = (conversation, usersMsgData) => {
@@ -47,8 +42,11 @@ export default class ChatBot {
                 let previousSentences = conversation.previousSentences;
                 let sentenceUserReplied;
                 let selectedOption;
-                console.log("previous sentenceID", previousSentences);
-                console.log("current sentenceReplyID", usersMsgData.sentenceUsrIsReplyingID);
+                // console.log("previous sentenceID", previousSentences);
+                // console.log(
+                //   "current sentenceReplyID",
+                //   usersMsgData.sentenceUsrIsReplyingID
+                // );
                 previousSentences === null || previousSentences === void 0 ? void 0 : previousSentences.forEach((sentence) => {
                     sentence.msgId === usersMsgData.sentenceUsrIsReplyingID &&
                         (sentenceUserReplied = sentence);
@@ -62,7 +60,7 @@ export default class ChatBot {
                                 ? sentenceUserReplied.freeReply
                                 : undefined;
                 }
-                console.log("selectedOption", selectedOption);
+                // console.log("selectedOption", selectedOption);
                 return selectedOption;
             }
             else {
@@ -76,7 +74,7 @@ export default class ChatBot {
                 return selectedOption;
             }
         };
-        this.chatBotFunctions = Object.assign(Object.assign(Object.assign(Object.assign({}, paymentReplies), noExistuserReplies), startAndEndReplies), adminReplies);
+        this.chatBotFunctions = Object.assign(Object.assign(Object.assign({}, paymentReplies), noExistuserReplies), startAndEndReplies);
     }
 }
 export function chatBotDates() {

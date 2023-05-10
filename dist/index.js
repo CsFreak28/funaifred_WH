@@ -139,7 +139,7 @@ app.post("/webhook", (request, response) => __awaiter(void 0, void 0, void 0, fu
                 //check if the user replied with an option ***
                 if (usersDBRecord) {
                     let selectedOption = chatBot.selectedOption(usersDBRecord, usrMsgData);
-                    console.log(selectedOption);
+                    // console.log(selectedOption);
                     const reply = yield chatBot.processKeyword(selectedOption, usrMsgData);
                     chatBot.reply(request, reply);
                 }

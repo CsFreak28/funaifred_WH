@@ -2,12 +2,13 @@ import axios, { AxiosError, AxiosResponse } from "axios";
 import { Request } from "express";
 import { reply, listReply } from "./interfaces.js";
 import { setConversationID } from "./store.js";
-const token = process.env.WHATSAPP_TOKEN;
 export default async function replySentenceWithText(
   request: Request,
   reply: reply
 ) {
+  const token = process.env.WHATSAPP_TOKEN;
   markMessageAsRead(request);
+  console.log("this is the token", token);
   let phone_number_id =
     request.body.entry[0].changes[0].value.metadata.phone_number_id;
   let from = request.body.entry[0].changes[0].value.messages[0].from; // extract the phone number from the webhook payload
@@ -58,18 +59,25 @@ export default async function replySentenceWithText(
       },
     })
       .then(async (response) => {
-        console.log("#debu 0: process entered the .then block");
+        console.log("#debug 0: process entered the .then block");
         let msgID = response.data.messages[0].id;
         setConversationID(from, msgID);
         if (secondMessage !== undefined) {
           console.log("#debug 1 :second message not undefined");
           let msgID = response.data.messages[0].id;
           if (typeof secondMessage === "object") {
+            console.log("#debug 3 : second message is an object");
+            // let john =
+            //   secondMessage.options !== undefined &&
+            //   secondMessage.options[0].typeOfReply === "interactive";
+
+            console.log("this is john");
             if (
-              secondMessage.options &&
-              secondMessage.options[0].typeOfReply == "interactive"
+              secondMessage.options !== undefined &&
+              secondMessage.options[Object.keys(secondMessage.options)[0]]
+                .typeOfReply === "interactive"
             ) {
-              console.log("#debug 1 :second message is an interactive Message");
+              console.log("#debug 2 :second message is an interactive Message");
               let response = await replySentenceWithInteractive(
                 request,
                 secondMessage
@@ -77,17 +85,20 @@ export default async function replySentenceWithText(
               let msgID = response.data.messages[0].id;
               setConversationID(from, msgID);
             } else {
-              if (
-                secondMessage.options &&
-                secondMessage.options[0].typeOfReply === "list"
-              ) {
-                let response = await replySentenceWithList(
-                  request,
-                  secondMessage.options[0]
-                );
-                let msgID = response.data.messages[0].id;
-                setConversationID(from, msgID);
-              }
+              // if (
+              //   secondMessage.options &&
+              //   secondMessage.options[Object.keys(secondMessage.options)[0]]
+              //     .typeOfReply === "list"
+              // ) {
+              //   secondMessage.options[Object.keys(secondMessage.options)[0];
+              //   console.log("debug #4: list reply");
+              //   let response = await replySentenceWithList(
+              //     request,
+              //     secondMessage
+              //   );
+              //   let msgID = response.data.messages[0].id;
+              //   setConversationID(from, msgID);
+              // }
             }
           } else {
             let response = await axios({
@@ -122,6 +133,8 @@ export async function replySentenceWithInteractive(
   request: Request,
   reply: reply
 ) {
+  const token = process.env.WHATSAPP_TOKEN;
+
   markMessageAsRead(request);
   let phone_number_id =
     request.body.entry[0].changes[0].value.metadata.phone_number_id;
@@ -173,6 +186,8 @@ export async function replySentenceWithList(
   request: Request,
   listReply: listReply
 ) {
+  const token = process.env.WHATSAPP_TOKEN;
+
   let msgID = request.body.entry[0].changes[0].value.messages[0].id;
   let phone_number_id =
     request.body.entry[0].changes[0].value.metadata.phone_number_id;
@@ -212,6 +227,8 @@ export async function replySentenceWithList(
 }
 
 async function markMessageAsRead(request: Request) {
+  const token = process.env.WHATSAPP_TOKEN;
+
   let msgID = request.body.entry[0].changes[0].value.messages[0].id;
   console.log(msgID);
   let phone_number_id =

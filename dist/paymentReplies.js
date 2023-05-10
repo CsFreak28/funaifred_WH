@@ -5,6 +5,6 @@ export const paymentReplies = {
             contextId: usersMsgData.sentenceUsrIsReplyingID,
             message: "payment about to be made",
         };
-        return reply;
+        return [reply];
     },
 };

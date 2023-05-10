@@ -3,6 +3,7 @@ import {
   usersMsgData,
   reply,
   conversation,
+  listReply,
 } from "./interfaces.js";
 import { generateMessage, whichDepartmentAndLevel } from "./chatGpt.js";
 import { userExistsInDB } from "./db.js";
@@ -55,46 +56,46 @@ export const startAndEndReplies = {
       previousSentences: [lastBotSentence],
     };
     addConversation(usersMsgData.usrPhoneNumber, conversation);
-    return reply;
+    return [reply];
   },
-  checkIfUserIsAStudent: async (usersMsgData: usersMsgData) => {
-    let userProfile = await userExistsInDB(usersMsgData.usrPhoneNumber);
-    let reply: reply;
-    let lastBotSentence: sentenceInterface;
-    let option1 = "Yes ✅";
-    let option2 = "No ❌";
-    if (userProfile) {
-      reply = {
-        message: "user document found just now",
-        contextId: usersMsgData.usrSentenceID,
-      };
-      lastBotSentence = {
-        msgId: "",
-        options: {
-          [option1]: "help",
-          [option2]: "reConfirmFromCR",
-        },
-      };
-    } else {
-      reply = {
-        contextId: usersMsgData.usrSentenceID,
-        message: [
-          "I just finished searching my database for your information, i did'nt find anything 😔.",
-          "but you can give me your *LEVEL* and *DEPARTMENT* and i will confirm from the course rep if you're in the department, \n write the department and level in this format \n *Computer science 100 level* or \n *CSC 100* or \n *I am in computer science department, 100 lvl* \n basically send it to me anyhow you like 🤗",
-        ],
-      };
-      lastBotSentence = {
-        msgId: "",
-        options: null,
-        freeReply: {
-          replyTo: "confirmAcctFromCR",
-        },
-      };
-    }
+  // checkIfUserIsAStudent: async (usersMsgData: usersMsgData) => {
+  //   let userProfile = await userExistsInDB(usersMsgData.usrPhoneNumber);
+  //   let reply: reply;
+  //   let lastBotSentence: sentenceInterface;
+  //   let option1 = "Yes ✅";
+  //   let option2 = "No ❌";
+  //   if (userProfile) {
+  //     reply = {
+  //       message: "user document found just now",
+  //       contextId: usersMsgData.usrSentenceID,
+  //     };
+  //     lastBotSentence = {
+  //       msgId: "",
+  //       options: {
+  //         [option1]: "help",
+  //         [option2]: "reConfirmFromCR",
+  //       },
+  //     };
+  //   } else {
+  //     reply = {
+  //       contextId: usersMsgData.usrSentenceID,
+  //       message: [
+  //         "I just finished searching my database for your information, i did'nt find anything 😔.",
+  //         "but you can give me your *LEVEL* and *DEPARTMENT* and i will confirm from the course rep if you're in the department, \n write the department and level in this format \n *Computer science 100 level* or \n *CSC 100* or \n *I am in computer science department, 100 lvl* \n basically send it to me anyhow you like 🤗",
+  //       ],
+  //     };
+  //     lastBotSentence = {
+  //       msgId: "",
+  //       options: null,
+  //       freeReply: {
+  //         replyTo: "confirmAcctFromCR",
+  //       },
+  //     };
+  //   }
 
-    addLastSentenceToConversation(usersMsgData.usrPhoneNumber, lastBotSentence);
-    return reply;
-  },
+  //   addLastSentenceToConversation(usersMsgData.usrPhoneNumber, lastBotSentence);
+  //   return Promise<reply>;
+  // },
   confirmAcctFromCR: async (usersMsgData: usersMsgData) => {
     let deptAndLevel = await whichDepartmentAndLevel(usersMsgData.usrSentence);
     let courseRepsName = "Benjamin";
@@ -131,7 +132,7 @@ export const startAndEndReplies = {
       },
     };
     addLastSentenceToConversation(usersMsgData.usrPhoneNumber, lastBotSentence);
-    return reply;
+    return [reply];
   },
   nonStudents: (usersMsgData: usersMsgData) => {
     let reply: reply = {
@@ -143,44 +144,36 @@ export const startAndEndReplies = {
       msgId: "",
       options: {},
     };
-    return reply;
+    return [reply];
     // addLastSentenceToConversation('')
   },
   sentToCourseRep: (usersMsgData: usersMsgData) => {
     let reply: reply = {
       message: `Your name has been sent to the course Rep for confirmation \n ${usersMsgData.usersWhatsappName} please be patient ⏳`,
     };
-    return reply;
+    return [reply];
   },
   help: (usersMsgData: usersMsgData) => {
     let option1 = "Payments";
     let reply: reply = {
-      message: [
-        "Hi! How can I assist you today?",
-        {
-          message: "",
-          typeOfReply: "list",
-          options: {
-            listReply: {
-              message: "These are the list of things i can help you do",
-              id: "134",
-              typeOfReply: "list",
-              headers: {
-                header: "List of features",
-                body: "This is a list of the categories of things i can help you do in *FUNAI*",
-                button: "FEATURES 📃",
-                listItems: [
-                  {
-                    title: "Payments",
-                    rows: [],
-                  },
-                ],
-              },
-            },
-          },
-        },
-      ],
+      message: ["Hi! How can I assist you today?"],
     };
-    return reply;
+    let secondReply: listReply = {
+      message: "These are the list of things i can help you do",
+      id: "134",
+      typeOfReply: "list",
+      headers: {
+        header: "List of features",
+        body: "This is a list of the categories of things i can help you do in *FUNAI*",
+        button: "FEATURES 📃",
+        listItems: [
+          {
+            title: "Payments",
+            rows: [],
+          },
+        ],
+      },
+    };
+    return [reply, secondReply];
   },
 };

@@ -61,12 +61,14 @@ export default async function replySentenceWithText(
         let msgID = response.data.messages[0].id;
         setConversationID(from, msgID);
         if (secondMessage !== undefined) {
+          console.log("#debug 1 :second message not undefined");
           let msgID = response.data.messages[0].id;
           if (typeof secondMessage === "object") {
             if (
               secondMessage.options &&
               secondMessage.options[0].typeOfReply == "interactive"
             ) {
+              console.log("#debug 1 :second message is an interactive Message");
               let response = await replySentenceWithInteractive(
                 request,
                 secondMessage
@@ -111,10 +113,7 @@ export default async function replySentenceWithText(
           }
         }
       })
-      .catch(() => {
-        console.log(token);
-        console.log("error replying with text");
-      });
+      .catch(() => {});
   }
   return response;
 }
@@ -164,7 +163,7 @@ export async function replySentenceWithInteractive(
       response = res;
     })
     .catch((e) => {
-      console.log("this is the error oo", e);
+      // console.log("this is the error oo", e);
     });
   return response;
 }
@@ -206,7 +205,7 @@ export async function replySentenceWithList(
       },
     },
   }).catch((e) => {
-    console.log("this is the sendList Error", e);
+    // console.log("this is the sendList Error", e);
   });
   return response;
 }
@@ -237,6 +236,6 @@ async function markMessageAsRead(request: Request) {
       console.log("mark message as read, complete");
     })
     .catch(function (error: AxiosError) {
-      console.log(error);
+      // console.log(error);
     });
 }

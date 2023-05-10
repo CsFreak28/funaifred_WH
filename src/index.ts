@@ -156,7 +156,7 @@ app.post("/webhook", async (request: Request, response: Response) => {
             usersDBRecord,
             usrMsgData
           );
-          console.log(selectedOption);
+          // console.log(selectedOption);
           const reply = await chatBot.processKeyword(
             selectedOption,
             usrMsgData

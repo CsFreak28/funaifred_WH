@@ -66,11 +66,11 @@ export default class ChatBot {
       let previousSentences = conversation.previousSentences;
       let sentenceUserReplied: sentenceInterface | undefined;
       let selectedOption: string | undefined | { replyTo: string };
-      console.log("previous sentenceID", previousSentences);
-      console.log(
-        "current sentenceReplyID",
-        usersMsgData.sentenceUsrIsReplyingID
-      );
+      // console.log("previous sentenceID", previousSentences);
+      // console.log(
+      //   "current sentenceReplyID",
+      //   usersMsgData.sentenceUsrIsReplyingID
+      // );
       previousSentences?.forEach((sentence: sentenceInterface) => {
         sentence.msgId === usersMsgData.sentenceUsrIsReplyingID &&
           (sentenceUserReplied = sentence);
@@ -84,7 +84,7 @@ export default class ChatBot {
             ? sentenceUserReplied.freeReply
             : undefined;
       }
-      console.log("selectedOption", selectedOption);
+      // console.log("selectedOption", selectedOption);
       return selectedOption;
     } else {
       //if users msg doesnt have a context id, then he may be replying to the lastbotSentence

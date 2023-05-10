@@ -126,18 +126,55 @@ export const startAndEndReplies = {
         [option2]: "sentToCourseRep",
       },
     };
+    addLastSentenceToConversation(usersMsgData.usrPhoneNumber, lastBotSentence);
     return reply;
   },
   nonStudents: (usersMsgData: usersMsgData) => {
     let reply: reply = {
-      message: "I was not built for non students",
+      message:
+        "Currently i don't have any features for non students \n But I'm sure in a future update i will have alot 💯",
       contextId: usersMsgData.usrSentenceID,
+    };
+    let lastBotSentence: sentenceInterface = {
+      msgId: "",
+      options: {},
+    };
+    return reply;
+    // addLastSentenceToConversation('')
+  },
+  sentToCourseRep: (usersMsgData: usersMsgData) => {
+    let reply: reply = {
+      message: `Your name has been sent to the course Rep for confirmation \n ${usersMsgData.usersWhatsappName} please be patient ⏳`,
     };
     return reply;
   },
   help: (usersMsgData: usersMsgData) => {
+    let option1 = "Payments";
     let reply: reply = {
-      message: "How can i help you boss ?",
+      message: [
+        "Hi! How can I assist you today?",
+        {
+          message: "",
+          typeOfReply: "list",
+          options: {
+            listReply: {
+              message: "These are the list of things i can help you do",
+              id: "134",
+              headers: {
+                header: "List of features",
+                body: "This is a list of the categories of things i can help you do in *FUNAI*",
+                button: "FEATURES 📃",
+                listItems: [
+                  {
+                    title: "Payments",
+                    rows: [],
+                  },
+                ],
+              },
+            },
+          },
+        },
+      ],
     };
     return reply;
   },

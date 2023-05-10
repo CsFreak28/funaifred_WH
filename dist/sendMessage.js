@@ -68,9 +68,20 @@ export default function replySentenceWithText(request, reply) {
                 if (secondMessage !== undefined) {
                     let msgID = response.data.messages[0].id;
                     if (typeof secondMessage === "object") {
-                        let response = yield replySentenceWithInteractive(request, secondMessage);
-                        let msgID = response.data.messages[0].id;
-                        setConversationID(from, msgID);
+                        if (secondMessage.options &&
+                            secondMessage.options[0].typeOfReply == "interactive") {
+                            let response = yield replySentenceWithInteractive(request, secondMessage);
+                            let msgID = response.data.messages[0].id;
+                            setConversationID(from, msgID);
+                        }
+                        else {
+                            if (secondMessage.options &&
+                                secondMessage.options[0].typeOfReply === "list") {
+                                let response = yield replySentenceWithList(request, secondMessage.options[0]);
+                                let msgID = response.data.messages[0].id;
+                                setConversationID(from, msgID);
+                            }
+                        }
                     }
                     else {
                         let response = yield axios({
@@ -157,7 +168,8 @@ export function replySentenceWithList(request, listReply) {
         let msgID = request.body.entry[0].changes[0].value.messages[0].id;
         let phone_number_id = request.body.entry[0].changes[0].value.metadata.phone_number_id;
         let from = request.body.entry[0].changes[0].value.messages[0].from;
-        let response = yield axios({
+        let response = "";
+        response = yield axios({
             method: "POST",
             url: "https://graph.facebook.com/v15.0/" + phone_number_id + "/messages",
             headers: {

@@ -34,6 +34,7 @@ export interface reply {
             options?: {
               [key: string]:
                 | {
+                    typeOfReply: "interactive";
                     message: string;
                     id: string;
                   }
@@ -87,6 +88,7 @@ interface listItem {
 export interface listReply {
   message?: string;
   id: string;
+  typeOfReply: "list";
   headers: {
     header: string;
     body: string;

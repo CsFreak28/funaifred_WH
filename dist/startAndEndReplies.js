@@ -29,10 +29,12 @@ export const startAndEndReplies = {
                     typeOfReply: "interactive",
                     options: {
                         firstButtonText: {
+                            typeOfReply: "interactive",
                             message: option1,
                             id: "110",
                         },
                         secondButtonText: {
+                            typeOfReply: "interactive",
                             message: option2,
                             id: "120",
                         },
@@ -108,10 +110,12 @@ export const startAndEndReplies = {
                     typeOfReply: "interactive",
                     options: {
                         firstbutton: {
+                            typeOfReply: "interactive",
                             message: option1,
                             id: "230",
                         },
                         secondbutton: {
+                            typeOfReply: "interactive",
                             message: option2,
                             id: "220",
                         },
@@ -160,6 +164,7 @@ export const startAndEndReplies = {
                         listReply: {
                             message: "These are the list of things i can help you do",
                             id: "134",
+                            typeOfReply: "list",
                             headers: {
                                 header: "List of features",
                                 body: "This is a list of the categories of things i can help you do in *FUNAI*",

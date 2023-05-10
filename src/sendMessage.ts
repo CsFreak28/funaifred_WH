@@ -58,6 +58,7 @@ export default async function replySentenceWithText(
       },
     })
       .then(async (response) => {
+        console.log("#debu 0: process entered the .then block");
         let msgID = response.data.messages[0].id;
         setConversationID(from, msgID);
         if (secondMessage !== undefined) {

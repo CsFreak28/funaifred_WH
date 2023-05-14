@@ -1,3 +1,5 @@
+import { DocumentData } from "firebase/firestore";
+
 interface StudentProfile {
   firstName: string;
   lastName: string;
@@ -32,13 +34,11 @@ export interface reply {
             message: string;
             typeOfReply: "interactive" | "list";
             options?: {
-              [key: string]:
-                | {
-                    typeOfReply: "interactive";
-                    message: string;
-                    id: string;
-                  }
-                | listReply;
+              [key: string]: {
+                typeOfReply: "interactive";
+                message: string;
+                id: string;
+              };
             };
           }
       >;
@@ -61,6 +61,7 @@ export interface sentenceInterface {
   };
 }
 export interface usersMsgData {
+  usersDBRecord: conversation | DocumentData | undefined;
   usrSentence: string;
   usrSentenceID: string;
   usersWhatsappName: string;
@@ -70,8 +71,18 @@ export interface usersMsgData {
 }
 export interface conversation {
   timeOfInteraction: string;
+  interactedBefore?: boolean;
   lastBotSentence: sentenceInterface;
+  registered?: {
+    done: boolean;
+    process: "none" | "courseRepConfirm";
+  };
   lastChat: string;
+  userDetails?: {
+    courseRep: string;
+    dept: string;
+    newName?: string;
+  };
   previousSentences: Array<sentenceInterface>;
 }
 export interface conversations {
@@ -80,6 +91,7 @@ export interface conversations {
 interface listItemOption {
   id: string;
   title: string;
+  description?: string;
 }
 interface listItem {
   title: string;

@@ -67,14 +67,18 @@ export const startAndEndReplies = {
     return [reply];
   },
   checkIfUserIsAStudent: async (usersMsgData: usersMsgData) => {
-    let userProfile = await userExistsInDB(usersMsgData.usrPhoneNumber);
+    let userProfile = await userExistsInDB(
+      usersMsgData.usrPhoneNumber,
+      "fullDoc"
+    );
+    console.log(userProfile);
     let reply: reply;
     let lastBotSentence: sentenceInterface;
     let option1 = "Yes ✅";
     let option2 = "No ❌";
     if (userProfile) {
       reply = {
-        message: "user document found just now",
+        message: "I found your details \n",
         contextId: usersMsgData.usrSentenceID,
       };
       lastBotSentence = {
@@ -180,7 +184,7 @@ export const startAndEndReplies = {
   },
   confirmNameFromCR: (usersMsgData: usersMsgData) => {
     let reply: reply = {
-      message: `Your name ${usersMsgData.usrSentence} has been sent to the course Rep for confirmation \n ${usersMsgData.usersWhatsappName} please be patient ⏳`,
+      message: `Your name *"${usersMsgData.usrSentence}"* has been sent to the course Rep for confirmation \n ${usersMsgData.usersWhatsappName} please be patient ⏳`,
       contextId: usersMsgData.usrSentenceID,
     };
     return [reply];

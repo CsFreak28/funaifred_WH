@@ -22,10 +22,9 @@ function sendOpenAiRequest(gptPrompt, openai, numberOfRetries) {
             ],
         })
             .then((res) => {
-            var _a, _b;
+            var _a;
             if (res !== undefined) {
-                console.log((_a = res.data.choices[0].message) === null || _a === void 0 ? void 0 : _a.content);
-                response = (_b = res.data.choices[0].message) === null || _b === void 0 ? void 0 : _b.content;
+                response = (_a = res.data.choices[0].message) === null || _a === void 0 ? void 0 : _a.content;
             }
         })
             .catch((e) => __awaiter(this, void 0, void 0, function* () {
@@ -39,7 +38,7 @@ function sendOpenAiRequest(gptPrompt, openai, numberOfRetries) {
                 }
             }
         }));
-        console.log(`this is the res ${response}`);
+        // console.log(`this is the res ${response}`);
         return response;
     });
 }
@@ -105,7 +104,7 @@ export function whichDepartmentAndLevel(usersText) {
         listOfDepartmentsAndTheirAbbr.forEach((deptAbbr) => {
             gptPrompt += `${deptAbbr},`;
         });
-        gptPrompt += `from the given text "${usersText}" extract the number and the university department from the given text, return them in this format eg CSC100 or ({department}{number})`;
+        gptPrompt += `from the given text "${usersText}"if the text does not contain a university department that is in the list of university departments and their abbreviations answer with only the word "noDepartment", if there is no number answer only with the abbreviation in this format eg CSC, if it contains a university department that is in the list of university departments and their abbreviations extract the number and the university department from the given text and return them in this format eg ({department}{number})`;
         let apiKey = process.env.OPENAI_API_KEY;
         const openai = new OpenAIApi(new Configuration({
             apiKey: apiKey,

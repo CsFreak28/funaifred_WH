@@ -7,4 +7,11 @@ export const paymentReplies = {
         };
         return [reply];
     },
+    makePayment: (usersMsgData) => {
+        let reply = {
+            contextId: usersMsgData.sentenceUsrIsReplyingID,
+            message: `Here's a list of payments I can help you pay \n additionally I'll store the reciepts for you for easy future retrieval`,
+        };
+        return [reply];
+    },
 };

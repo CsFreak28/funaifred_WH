@@ -12,7 +12,7 @@ import { getDoc, doc, } from "firebase/firestore";
 export function userExistsInDB(phoneNumber) {
     return __awaiter(this, void 0, void 0, function* () {
         //get the users record from firebase
-        const docRef = doc(db, "conversations", `${phoneNumber}`);
+        const docRef = doc(db, "studentProfil", `${phoneNumber}`);
         const docSnap = yield getDoc(docRef);
         let usersDBRecord = undefined;
         if (docSnap.exists()) {

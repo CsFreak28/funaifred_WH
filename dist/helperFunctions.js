@@ -1,6 +1,47 @@
 //setup openai configuration
-export function getConversation(phoneNumber, mapOfConversations) { }
 export function userExistsInLocalConversations(phoneNumber, conversations) {
     let usersConversation = conversations[phoneNumber];
     return usersConversation;
+}
+export function extractDepartmentAndLevel(text) {
+    console.log("the text", text);
+    let abbreviations = [
+        {
+            CSC: {
+                deptFullName: "Computer Science",
+                levels: ["100", "200", "300", "400"],
+            },
+        },
+    ];
+    let dept = "";
+    let level = "";
+    let deptFullName = "";
+    let deptExists = false;
+    const splitText = text.split("");
+    let arrayOfNumbers = ["1", "2", "3", "4", "5", "6", "0"];
+    let arrayOfLetters = "ABCDEFGHJHIJKLMNOPQRSTUVWXYZ".split("");
+    for (let i = 0; i < splitText.length; i++) {
+        let letter = splitText[i];
+        if (arrayOfNumbers.includes(letter) && level.length < 3) {
+            level += letter;
+        }
+        else if (arrayOfLetters.includes(letter)) {
+            dept += letter;
+        }
+    }
+    let obj = abbreviations[0];
+    for (let i in obj) {
+        if (dept === i) {
+            let deptInfo = obj[i];
+            deptFullName = deptInfo.deptFullName;
+            deptExists = deptInfo.levels.includes(level);
+        }
+    }
+    console.log("debug 20$$", deptFullName, deptExists);
+    return {
+        deptFullName,
+        deptExists,
+        level,
+        dept,
+    };
 }

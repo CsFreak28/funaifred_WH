@@ -15,7 +15,7 @@ export async function userExistsInDB(
   phoneNumber: string
 ): Promise<DocumentData | undefined> {
   //get the users record from firebase
-  const docRef = doc(db, "conversations", `${phoneNumber}`);
+  const docRef = doc(db, "studentProfil", `${phoneNumber}`);
   const docSnap = await getDoc(docRef);
   let usersDBRecord: DocumentData | undefined = undefined;
   if (docSnap.exists()) {

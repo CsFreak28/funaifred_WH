@@ -8,7 +8,7 @@ export default async function replySentenceWithText(
 ) {
   const token = process.env.WHATSAPP_TOKEN;
   markMessageAsRead(request);
-  console.log("this is the token", token);
+  // console.log("this is the token", token);
   let phone_number_id =
     request.body.entry[0].changes[0].value.metadata.phone_number_id;
   let from = request.body.entry[0].changes[0].value.messages[0].from; // extract the phone number from the webhook payload
@@ -32,7 +32,7 @@ export default async function replySentenceWithText(
         Authorization: `Bearer ${token}`,
       },
     }).catch(() => {
-      console.log(token);
+      // console.log(token);
       console.log("error replying with text");
     });
     let msgID = response.data.messages[0].id;
@@ -64,14 +64,8 @@ export default async function replySentenceWithText(
         setConversationID(from, msgID);
         if (secondMessage !== undefined) {
           console.log("#debug 1 :second message not undefined");
-          let msgID = response.data.messages[0].id;
+          let contextID = response.data.messages[0].id;
           if (typeof secondMessage === "object") {
-            console.log("#debug 3 : second message is an object");
-            // let john =
-            //   secondMessage.options !== undefined &&
-            //   secondMessage.options[0].typeOfReply === "interactive";
-
-            console.log("this is john");
             if (
               secondMessage.options !== undefined &&
               secondMessage.options[Object.keys(secondMessage.options)[0]]
@@ -84,21 +78,6 @@ export default async function replySentenceWithText(
               );
               let msgID = response.data.messages[0].id;
               setConversationID(from, msgID);
-            } else {
-              // if (
-              //   secondMessage.options &&
-              //   secondMessage.options[Object.keys(secondMessage.options)[0]]
-              //     .typeOfReply === "list"
-              // ) {
-              //   secondMessage.options[Object.keys(secondMessage.options)[0];
-              //   console.log("debug #4: list reply");
-              //   let response = await replySentenceWithList(
-              //     request,
-              //     secondMessage
-              //   );
-              //   let msgID = response.data.messages[0].id;
-              //   setConversationID(from, msgID);
-              // }
             }
           } else {
             let response = await axios({
@@ -110,7 +89,7 @@ export default async function replySentenceWithText(
               data: {
                 messaging_product: "whatsapp",
                 context: {
-                  message_id: msgID,
+                  message_id: contextID,
                 },
                 to: from,
                 text: { body: `${secondMessage}` },
@@ -187,8 +166,7 @@ export async function replySentenceWithList(
   listReply: listReply
 ) {
   const token = process.env.WHATSAPP_TOKEN;
-
-  let msgID = request.body.entry[0].changes[0].value.messages[0].id;
+  console.log("debug #5 : process entered list");
   let phone_number_id =
     request.body.entry[0].changes[0].value.metadata.phone_number_id;
   let from = request.body.entry[0].changes[0].value.messages[0].from;
@@ -220,9 +198,15 @@ export async function replySentenceWithList(
         },
       },
     },
-  }).catch((e) => {
-    // console.log("this is the sendList Error", e);
-  });
+  })
+    .then((response) => {
+      console.log("sendList was succesful");
+      let msgID = response.data.messages[0].id;
+      setConversationID(from, msgID);
+    })
+    .catch((e) => {
+      console.log("this is the sendList Error");
+    });
   return response;
 }
 

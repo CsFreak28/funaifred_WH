@@ -17,7 +17,6 @@ async function sendOpenAiRequest(
     })
     .then((res) => {
       if (res !== undefined) {
-        console.log(res.data.choices[0].message?.content);
         response = res.data.choices[0].message?.content;
       }
     })
@@ -36,7 +35,7 @@ async function sendOpenAiRequest(
         }
       }
     });
-  console.log(`this is the res ${response}`);
+  // console.log(`this is the res ${response}`);
   return response;
 }
 
@@ -102,7 +101,7 @@ export async function whichDepartmentAndLevel(usersText: string) {
   listOfDepartmentsAndTheirAbbr.forEach((deptAbbr) => {
     gptPrompt += `${deptAbbr},`;
   });
-  gptPrompt += `from the given text "${usersText}" extract the number and the university department from the given text, return them in this format eg CSC100 or ({department}{number})`;
+  gptPrompt += `from the given text "${usersText}"if the text does not contain a university department that is in the list of university departments and their abbreviations answer with only the word "noDepartment", if there is no number answer only with the abbreviation in this format eg CSC, if it contains a university department that is in the list of university departments and their abbreviations extract the number and the university department from the given text and return them in this format eg ({department}{number})`;
   let apiKey = process.env.OPENAI_API_KEY;
   const openai = new OpenAIApi(
     new Configuration({

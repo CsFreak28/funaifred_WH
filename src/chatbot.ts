@@ -14,6 +14,7 @@ import { startAndEndReplies } from "./startAndEndReplies.js";
 // import { Replies } from "./types.js";
 import replySentenceWithText, {
   replySentenceWithInteractive,
+  replySentenceWithList,
 } from "./sendMessage.js";
 import { Request } from "express";
 export default class ChatBot {
@@ -53,9 +54,13 @@ export default class ChatBot {
       return reply;
     }
   };
-  reply = (request: Request, replies: Array<reply | listReply>) => {
+  reply = async (request: Request, replies: any) => {
     let length = replies.length;
-    if (length > 1) {
+    if (length === 2) {
+      await replySentenceWithText(request, replies[0]);
+      await replySentenceWithList(request, replies[1]);
+    } else {
+      await replySentenceWithText(request, replies[0]);
     }
   };
   selectedOption = (
@@ -67,8 +72,9 @@ export default class ChatBot {
 
       let previousSentences = conversation.previousSentences;
       let sentenceUserReplied: sentenceInterface | undefined;
-      let selectedOption: string | undefined | { replyTo: string };
-      // console.log("previous sentenceID", previousSentences);
+      let selectedOption: string | undefined;
+      console.log("the context", usersMsgData.sentenceUsrIsReplyingID);
+      console.log("previous sentenceID", previousSentences);
       // console.log(
       //   "current sentenceReplyID",
       //   usersMsgData.sentenceUsrIsReplyingID
@@ -83,7 +89,7 @@ export default class ChatBot {
           sentenceUserReplied.options !== null
             ? sentenceUserReplied.options[usersMsgData.usrSentence]
             : sentenceUserReplied.freeReply !== undefined
-            ? sentenceUserReplied.freeReply
+            ? sentenceUserReplied.freeReply.replyTo
             : undefined;
       }
       // console.log("selectedOption", selectedOption);
@@ -91,11 +97,11 @@ export default class ChatBot {
     } else {
       //if users msg doesnt have a context id, then he may be replying to the lastbotSentence
       let lastBotSentence = conversation.lastBotSentence;
-      let selectedOption: string | undefined | { replyTo: string } =
+      let selectedOption: string | undefined =
         lastBotSentence.options !== null
           ? lastBotSentence.options[usersMsgData.usrSentence]
           : lastBotSentence.freeReply !== undefined
-          ? lastBotSentence.freeReply
+          ? lastBotSentence.freeReply.replyTo
           : undefined;
       return selectedOption;
     }

@@ -10,6 +10,8 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 import { noExistuserReplies } from "./noExistUser.js";
 import { paymentReplies } from "./paymentReplies.js";
 import { startAndEndReplies } from "./startAndEndReplies.js";
+// import { Replies } from "./types.js";
+import replySentenceWithText, { replySentenceWithList, } from "./sendMessage.js";
 export default class ChatBot {
     constructor() {
         this.processKeyword = (message, usrsMessage) => __awaiter(this, void 0, void 0, function* () {
@@ -31,18 +33,24 @@ export default class ChatBot {
                 return reply;
             }
         });
-        this.reply = (request, replies) => {
+        this.reply = (request, replies) => __awaiter(this, void 0, void 0, function* () {
             let length = replies.length;
-            if (length > 1) {
+            if (length === 2) {
+                yield replySentenceWithText(request, replies[0]);
+                yield replySentenceWithList(request, replies[1]);
             }
-        };
+            else {
+                yield replySentenceWithText(request, replies[0]);
+            }
+        });
         this.selectedOption = (conversation, usersMsgData) => {
             if (usersMsgData.sentenceUsrIsReplyingID) {
                 //if the user's message has an id, check which sentence he was replying to
                 let previousSentences = conversation.previousSentences;
                 let sentenceUserReplied;
                 let selectedOption;
-                // console.log("previous sentenceID", previousSentences);
+                console.log("the context", usersMsgData.sentenceUsrIsReplyingID);
+                console.log("previous sentenceID", previousSentences);
                 // console.log(
                 //   "current sentenceReplyID",
                 //   usersMsgData.sentenceUsrIsReplyingID
@@ -57,7 +65,7 @@ export default class ChatBot {
                         sentenceUserReplied.options !== null
                             ? sentenceUserReplied.options[usersMsgData.usrSentence]
                             : sentenceUserReplied.freeReply !== undefined
-                                ? sentenceUserReplied.freeReply
+                                ? sentenceUserReplied.freeReply.replyTo
                                 : undefined;
                 }
                 // console.log("selectedOption", selectedOption);
@@ -69,7 +77,7 @@ export default class ChatBot {
                 let selectedOption = lastBotSentence.options !== null
                     ? lastBotSentence.options[usersMsgData.usrSentence]
                     : lastBotSentence.freeReply !== undefined
-                        ? lastBotSentence.freeReply
+                        ? lastBotSentence.freeReply.replyTo
                         : undefined;
                 return selectedOption;
             }

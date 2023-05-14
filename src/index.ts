@@ -10,6 +10,7 @@ import { conversationsStore, getConversation } from "./store.js";
 import bodyParser, { text } from "body-parser";
 import { conversation, conversations, usersMsgData } from "./interfaces.js";
 import ChatBot from "./chatbot.js";
+import { getAllRegistration } from "./startAndEndReplies.js";
 dotenv.config();
 const app: Express = express();
 app.use(bodyParser.json());
@@ -92,6 +93,7 @@ app.post("/webhook", async (request: Request, response: Response) => {
         //if usersDBRecord doesn't exist and users local conversation isn't available then user isnt recognized as a student
         console.log("userDBrecord", usersDBRecord);
         const usrMsgData: usersMsgData = {
+          usersDBRecord: usersDBRecord,
           usrSentence: usersText,
           usrSentenceID: msgID,
           usrPhoneNumber: phoneNumber,
@@ -100,7 +102,8 @@ app.post("/webhook", async (request: Request, response: Response) => {
           userHasLocalConversation: userHasLocalConversation !== undefined,
         };
         // console.log("conversations", conversationsStore);
-        if (usersDBRecord === undefined) {
+        if (usersDBRecord === undefined || !usersDBRecord.interactedBefore) {
+          console.log("hhmm");
           const reply = await chatBot.processKeyword(
             "introMessage",
             usrMsgData
@@ -110,19 +113,51 @@ app.post("/webhook", async (request: Request, response: Response) => {
           usersDBRecord !== undefined &&
           (await textIsAGreeting(usersText))
         ) {
-          const reply = await chatBot.processKeyword("help", usrMsgData);
-          chatBot.reply(request, reply);
+          if (usersDBRecord.registered.done) {
+            //user is registered and confirmed by his course Rep
+            const reply = await chatBot.processKeyword("help", usrMsgData);
+            chatBot.reply(request, reply);
+          } else {
+            //user has not registered
+            const reply = await chatBot.processKeyword(
+              "incompleteRegistration",
+              usrMsgData
+            );
+            chatBot.reply(request, reply);
+          }
         } else {
           //check if the user replied with an option ***
           let selectedOption = chatBot.selectedOption(
             usersDBRecord,
             usrMsgData
           );
-          const reply = await chatBot.processKeyword(
-            selectedOption,
-            usrMsgData
-          );
-          chatBot.reply(request, reply);
+          let selectedOptionIsARegistrationReply =
+            selectedOption !== undefined &&
+            getAllRegistration().includes(selectedOption);
+          if (usersDBRecord.registered.done) {
+            const reply = await chatBot.processKeyword(
+              selectedOption,
+              usrMsgData
+            );
+            console.log("hey");
+            chatBot.reply(request, reply);
+          } else if (
+            !usersDBRecord.registered.done &&
+            selectedOptionIsARegistrationReply
+          ) {
+            const reply = await chatBot.processKeyword(
+              selectedOption,
+              usrMsgData
+            );
+            chatBot.reply(request, reply);
+          } else {
+            //user has not registered
+            const reply = await chatBot.processKeyword(
+              "incompleteRegistration",
+              usrMsgData
+            );
+            chatBot.reply(request, reply);
+          }
         }
       } else if (messageType === "interactive") {
         let usersText =
@@ -131,7 +166,7 @@ app.post("/webhook", async (request: Request, response: Response) => {
             ? request.body.entry[0].changes[0].value.messages[0].interactive
                 .button_reply.title
             : request.body.entry[0].changes[0].value.messages[0].interactive
-                .list_reply;
+                .list_reply.title;
         let usersConversation: conversation | undefined =
           getConversation(phoneNumber);
         let userHasLocalConversation = usersConversation;
@@ -142,6 +177,7 @@ app.post("/webhook", async (request: Request, response: Response) => {
         //if usersDBRecord doesn't exist and users local conversation isn't available then user isnt recognized as a student
         // console.log("this is the data", usersDBRecord);
         const usrMsgData: usersMsgData = {
+          usersDBRecord: usersDBRecord,
           usrSentence: usersText,
           usersWhatsappName: usersWhatsappName,
           usrSentenceID: msgID,
@@ -149,6 +185,7 @@ app.post("/webhook", async (request: Request, response: Response) => {
           sentenceUsrIsReplyingID: contextId,
           userHasLocalConversation: userHasLocalConversation !== undefined,
         };
+        console.log("this is the userText", usersText);
         // console.log("these are the conversations", conversationsStore);
         //check if the user replied with an option ***
         if (usersDBRecord) {

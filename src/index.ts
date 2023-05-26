@@ -213,6 +213,6 @@ app.post("/webhook", async (request: Request, response: Response) => {
     response.sendStatus(404);
   }
 });
-app.listen(port || 8000, () => {
+app.listen(port || 8080, () => {
   console.log("i am listening bro ⚡ on", port);
 });

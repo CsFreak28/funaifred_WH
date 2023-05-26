@@ -184,6 +184,6 @@ app.post("/webhook", (request, response) => __awaiter(void 0, void 0, void 0, fu
         response.sendStatus(404);
     }
 }));
-app.listen(port || 8000, () => {
+app.listen(port || 8080, () => {
     console.log("i am listening bro ⚡ on", port);
 });

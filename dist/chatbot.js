@@ -7,11 +7,12 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+// import { testReplies } from "./testReplies.js";
+import { webscraperReplies } from "./webscraperReplies.js";
 import { noExistuserReplies } from "./noExistUser.js";
-import { paymentReplies } from "./paymentReplies.js";
 import { startAndEndReplies } from "./startAndEndReplies.js";
 // import { Replies } from "./types.js";
-import replySentenceWithText, { replySentenceWithList, } from "./sendMessage.js";
+import replySentenceWithText, { reactToMessage, replySentenceWithInteractive, replySentenceWithList, sendResult, } from "./sendMessage.js";
 export default class ChatBot {
     constructor() {
         this.processKeyword = (message, usrsMessage) => __awaiter(this, void 0, void 0, function* () {
@@ -25,7 +26,9 @@ export default class ChatBot {
             if (message === undefined || reply === undefined) {
                 //check if the users message contains certain keywords
                 let noReply = {
-                    message: ["I don't quite understand what you want me to do"],
+                    message: [
+                        `I don't understand what you mean by *"${usrsMessage.usrSentence}"* , \n in a future upgrade i may be capable of doing that, but right now I can't 😓.`,
+                    ],
                 };
                 return [noReply];
             }
@@ -40,7 +43,26 @@ export default class ChatBot {
                 yield replySentenceWithList(request, replies[1]);
             }
             else {
-                yield replySentenceWithText(request, replies[0]);
+                if (replies[0].typeOfReply !== undefined &&
+                    replies[0].typeOfReply === "list") {
+                    yield replySentenceWithList(request, replies[0]);
+                }
+                else if (replies[0].typeOfReply !== undefined &&
+                    replies[0].typeOfReply === "reaction") {
+                    yield reactToMessage(request, "💯");
+                }
+                else if (replies[0].typeOfReply !== undefined &&
+                    replies[0].typeOfReply === "interactive") {
+                    yield replySentenceWithInteractive(request, replies[0].message[0]);
+                }
+                else if (replies[0].typeOfReply !== undefined &&
+                    replies[0].typeOfReply === "document") {
+                    yield replySentenceWithText(request, replies[0]);
+                    sendResult(request);
+                }
+                else {
+                    yield replySentenceWithText(request, replies[0]);
+                }
             }
         });
         this.selectedOption = (conversation, usersMsgData) => {
@@ -49,12 +71,6 @@ export default class ChatBot {
                 let previousSentences = conversation.previousSentences;
                 let sentenceUserReplied;
                 let selectedOption;
-                console.log("the context", usersMsgData.sentenceUsrIsReplyingID);
-                console.log("previous sentenceID", previousSentences);
-                // console.log(
-                //   "current sentenceReplyID",
-                //   usersMsgData.sentenceUsrIsReplyingID
-                // );
                 previousSentences === null || previousSentences === void 0 ? void 0 : previousSentences.forEach((sentence) => {
                     sentence.msgId === usersMsgData.sentenceUsrIsReplyingID &&
                         (sentenceUserReplied = sentence);
@@ -82,7 +98,7 @@ export default class ChatBot {
                 return selectedOption;
             }
         };
-        this.chatBotFunctions = Object.assign(Object.assign(Object.assign({}, paymentReplies), noExistuserReplies), startAndEndReplies);
+        this.chatBotFunctions = Object.assign(Object.assign(Object.assign({}, noExistuserReplies), startAndEndReplies), webscraperReplies);
     }
 }
 export function chatBotDates() {

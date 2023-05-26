@@ -1,3 +1,4 @@
+import { checkIfLoginsAreAvailable } from "./db.js";
 import {
   listReply,
   reply,
@@ -127,7 +128,7 @@ const ResultReplies = {
     console.log("inside here");
     let option1 = "FIRST SEMESTER";
     let option2 = "SECOND SEMESTER";
-    let nextAction = "getSingleResult_getResult";
+    let nextAction = "getSingleResult_whichFormatOfResult";
     let lastBotSentence: sentenceInterface = {
       msgId: "",
       options: {
@@ -160,36 +161,58 @@ const ResultReplies = {
     addLastSentenceToConversation(usersMsgData.usrPhoneNumber, lastBotSentence);
     return [reply];
   },
-  whatFormat: (usersMsgData: usersMsgData) => {
+  getSingleResult_whichFormatOfResult: (usersMsgData: usersMsgData) => {
+    console.log("blablablablablablablablalblalblalb");
+    pushComboAnswer(usersMsgData.usrPhoneNumber, usersMsgData.usrSentence);
+    let option1 = "PDF";
+    let option2 = "EMOJI'S";
+    let lastBotSentence: sentenceInterface = {
+      msgId: "",
+      options: {
+        [option1]: "getSingleResult_getLogins",
+        [option2]: "getSingleResult_getLogins",
+      },
+    };
     let reply: reply = {
+      typeOfReply: "interactive",
       message: [
         {
-          message: "In what format would you like to get your result",
+          message: "In what format would you like to get your result ?",
           typeOfReply: "interactive",
           options: {
             firstButton: {
               typeOfReply: "interactive",
               id: "10",
-              message: "PDF",
+              message: option1,
             },
             secondButton: {
               typeOfReply: "interactive",
-              id: "10",
-              message: "EMOJI's REPRESENTATION",
+              id: "11",
+              message: option2,
             },
           },
         },
       ],
+      contextId: usersMsgData.usrSentenceID,
     };
+    addLastSentenceToConversation(usersMsgData.usrPhoneNumber, lastBotSentence);
     return [reply];
   },
-  getSingleResult_getResult: (usersMsgData: usersMsgData) => {
-    pushComboAnswer(usersMsgData.usrPhoneNumber, usersMsgData.usrSentence);
-    console.log("get the result");
+  getSingleResult_getLogins: async (usersMsgData: usersMsgData) => {
+    let usrsLogins = await checkIfLoginsAreAvailable(
+      `${usersMsgData.usersDBRecord?.studentInfo.dept}`,
+      usersMsgData.usrPhoneNumber
+    );
     let reply: reply = {
       message: "here's your result",
       contextId: usersMsgData.usrSentenceID,
     };
+    if (usrsLogins) {
+      reply = {
+        message: "please be patient",
+      };
+    }
+    console.log("get the result");
     return [reply];
   },
   getAllResults: (usersMsgData: usersMsgData) => {

@@ -27,7 +27,8 @@ function sendOpenAiRequest(gptPrompt, openai, numberOfRetries) {
                 response = (_a = res.data.choices[0].message) === null || _a === void 0 ? void 0 : _a.content;
             }
         })
-            .catch((e) => __awaiter(this, void 0, void 0, function* () {
+            .catch((e) => {
+            console.log(e.response);
             if (e.response.status === 429) {
                 if (numberOfRetries < 3) {
                     console.log(e.response.status);
@@ -37,7 +38,7 @@ function sendOpenAiRequest(gptPrompt, openai, numberOfRetries) {
                     }), 1000 * (numberOfRetries + 1));
                 }
             }
-        }));
+        });
         // console.log(`this is the res ${response}`);
         return response;
     });
@@ -113,4 +114,15 @@ export function whichDepartmentAndLevel(usersText) {
         let response = yield sendOpenAiRequest(gptPrompt, openai, numberOfRetries);
         return response;
     });
+}
+export function txtIsAGreeting(txt) {
+    let lowercaseTxt = txt.toLowerCase();
+    let textIsAGreeting = false;
+    if (lowercaseTxt.includes("hey") ||
+        lowercaseTxt.includes("hello") ||
+        lowercaseTxt.includes("hi") ||
+        lowercaseTxt.includes("how far")) {
+        textIsAGreeting = true;
+    }
+    return textIsAGreeting;
 }

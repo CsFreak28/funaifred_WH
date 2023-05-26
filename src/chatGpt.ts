@@ -20,7 +20,8 @@ async function sendOpenAiRequest(
         response = res.data.choices[0].message?.content;
       }
     })
-    .catch(async (e) => {
+    .catch((e) => {
+      console.log(e.response);
       if (e.response.status === 429) {
         if (numberOfRetries < 3) {
           console.log(e.response.status);
@@ -111,4 +112,17 @@ export async function whichDepartmentAndLevel(usersText: string) {
   let numberOfRetries = 3;
   let response = await sendOpenAiRequest(gptPrompt, openai, numberOfRetries);
   return response;
+}
+export function txtIsAGreeting(txt: string) {
+  let lowercaseTxt = txt.toLowerCase();
+  let textIsAGreeting: boolean = false;
+  if (
+    lowercaseTxt.includes("hey") ||
+    lowercaseTxt.includes("hello") ||
+    lowercaseTxt.includes("hi") ||
+    lowercaseTxt.includes("how far")
+  ) {
+    textIsAGreeting = true;
+  }
+  return textIsAGreeting;
 }

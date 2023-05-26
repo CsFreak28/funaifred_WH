@@ -10,8 +10,10 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 import express from "express";
 import dotenv from "dotenv";
 import { userExistsInDB } from "./db.js";
-import { textIsAGreeting, findMeaning, whichDepartmentAndLevel, } from "./chatGpt.js";
-import { getConversation } from "./store.js";
+import { txtIsAGreeting } from "./chatGpt.js";
+import { 
+// conversationsStore,
+getConversation, setConversation, } from "./store.js";
 import bodyParser from "body-parser";
 import ChatBot from "./chatbot.js";
 import { getAllRegistration } from "./startAndEndReplies.js";
@@ -27,9 +29,6 @@ let port = process.env.PORT;
 const chatBot = new ChatBot();
 app.get("/", (request, response) => __awaiter(void 0, void 0, void 0, function* () {
     response.status(200);
-    textIsAGreeting("hello");
-    findMeaning("how do i pay for gst");
-    whichDepartmentAndLevel("i am in computer sceine, 300 level");
     response.send("i am connected");
 }));
 app.get("/webhook", (request, response) => {
@@ -64,6 +63,7 @@ app.post("/webhook", (request, response) => __awaiter(void 0, void 0, void 0, fu
     let body = request.body;
     // Check the Incoming webhook message.
     // info on WhatsApp text message payload: https://developers.facebook.com/docs/whatsapp/cloud-api/webhooks/payload-examples#text-messages.
+    console.log("sticker sent");
     if (request.body.object) {
         if (request.body.entry &&
             request.body.entry[0].changes &&
@@ -77,18 +77,20 @@ app.post("/webhook", (request, response) => __awaiter(void 0, void 0, void 0, fu
                 ? undefined
                 : request.body.entry[0].changes[0].value.messages[0].context.id;
             let msgID = request.body.entry[0].changes[0].value.messages[0].id;
-            // let usersWhatsappName =
-            console.log("this is the message type", messageType);
+            console.log("this is the message type", messageType, "this message");
+            console.log("first boy");
             if (messageType === "text") {
                 // extract the message text from the webhook payload.
                 let usersText = request.body.entry[0].changes[0].value.messages[0].text.body;
                 let usersConversation = getConversation(phoneNumber);
                 let userHasLocalConversation = usersConversation;
                 let usersDBRecord = usersConversation === undefined
-                    ? yield userExistsInDB(phoneNumber)
+                    ? yield userExistsInDB(phoneNumber, "conversation")
                     : usersConversation;
+                usersDBRecord !== undefined &&
+                    setConversation(phoneNumber, usersDBRecord);
                 //if usersDBRecord doesn't exist and users local conversation isn't available then user isnt recognized as a student
-                console.log("userDBrecord", usersDBRecord);
+                // console.log("userDBrecord", usersDBRecord);
                 const usrMsgData = {
                     usersDBRecord: usersDBRecord,
                     usrSentence: usersText,
@@ -99,13 +101,13 @@ app.post("/webhook", (request, response) => __awaiter(void 0, void 0, void 0, fu
                     userHasLocalConversation: userHasLocalConversation !== undefined,
                 };
                 // console.log("conversations", conversationsStore);
+                console.log("this user has interacted before", usersDBRecord === null || usersDBRecord === void 0 ? void 0 : usersDBRecord.interactedBefore);
                 if (usersDBRecord === undefined || !usersDBRecord.interactedBefore) {
                     console.log("hhmm");
                     const reply = yield chatBot.processKeyword("introMessage", usrMsgData);
                     chatBot.reply(request, reply);
                 }
-                else if (usersDBRecord !== undefined &&
-                    (yield textIsAGreeting(usersText))) {
+                else if (usersDBRecord !== undefined && txtIsAGreeting(usersText)) {
                     if (usersDBRecord.registered.done) {
                         //user is registered and confirmed by his course Rep
                         const reply = yield chatBot.processKeyword("help", usrMsgData);
@@ -124,7 +126,6 @@ app.post("/webhook", (request, response) => __awaiter(void 0, void 0, void 0, fu
                         getAllRegistration().includes(selectedOption);
                     if (usersDBRecord.registered.done) {
                         const reply = yield chatBot.processKeyword(selectedOption, usrMsgData);
-                        console.log("hey");
                         chatBot.reply(request, reply);
                     }
                     else if (!usersDBRecord.registered.done &&
@@ -134,7 +135,8 @@ app.post("/webhook", (request, response) => __awaiter(void 0, void 0, void 0, fu
                     }
                     else {
                         //user has not registered
-                        const reply = yield chatBot.processKeyword("incompleteRegistration", usrMsgData);
+                        const reply = yield chatBot.processKeyword("incompleteRegistration", //** change this back to incomplete registration */
+                        usrMsgData);
                         chatBot.reply(request, reply);
                     }
                 }
@@ -149,7 +151,7 @@ app.post("/webhook", (request, response) => __awaiter(void 0, void 0, void 0, fu
                 let usersConversation = getConversation(phoneNumber);
                 let userHasLocalConversation = usersConversation;
                 let usersDBRecord = usersConversation === undefined
-                    ? yield userExistsInDB(phoneNumber)
+                    ? yield userExistsInDB(phoneNumber, "conversation")
                     : usersConversation;
                 //if usersDBRecord doesn't exist and users local conversation isn't available then user isnt recognized as a student
                 // console.log("this is the data", usersDBRecord);

@@ -17,7 +17,7 @@ interface StudentProfile {
 
 export interface reply {
   contextId?: string;
-  type?: "interactive" | "list";
+  typeOfReply?: "interactive" | "list" | "document";
   options?: {
     [key: string]:
       | {
@@ -71,6 +71,7 @@ export interface usersMsgData {
 }
 export interface conversation {
   timeOfInteraction: string;
+  chainAnswers?: Array<string>;
   interactedBefore?: boolean;
   lastBotSentence: sentenceInterface;
   registered?: {
@@ -78,9 +79,10 @@ export interface conversation {
     process: "none" | "courseRepConfirm";
   };
   lastChat: string;
-  userDetails?: {
+  studentInfo?: {
     courseRep: string;
     dept: string;
+    level: string;
     newName?: string;
   };
   previousSentences: Array<sentenceInterface>;
@@ -92,6 +94,9 @@ interface listItemOption {
   id: string;
   title: string;
   description?: string;
+}
+export interface reaction {
+  typeOfReply: "reaction";
 }
 interface listItem {
   title: string;

@@ -1,12 +1,16 @@
 import express, { Express, Request, Response } from "express";
 import dotenv from "dotenv";
 import { userExistsInDB } from "./db.js";
+import { getResult } from "./webscraperFunctions.js";
+import axios from "axios";
+import { txtIsAGreeting } from "./chatGpt.js";
+import { storage } from "./firebaseConfig.js";
+import { getDownloadURL, ref } from "firebase/storage";
 import {
-  textIsAGreeting,
-  findMeaning,
-  whichDepartmentAndLevel,
-} from "./chatGpt.js";
-import { conversationsStore, getConversation } from "./store.js";
+  // conversationsStore,
+  getConversation,
+  setConversation,
+} from "./store.js";
 import bodyParser, { text } from "body-parser";
 import { conversation, conversations, usersMsgData } from "./interfaces.js";
 import ChatBot from "./chatbot.js";
@@ -25,9 +29,6 @@ let port = process.env.PORT;
 const chatBot = new ChatBot();
 app.get("/", async (request: Request, response: Response) => {
   response.status(200);
-  textIsAGreeting("hello");
-  findMeaning("how do i pay for gst");
-  whichDepartmentAndLevel("i am in computer sceine, 300 level");
   response.send("i am connected");
 });
 app.get("/webhook", (request: Request, response: Response) => {
@@ -60,6 +61,7 @@ app.post("/webhook", async (request: Request, response: Response) => {
   let body = request.body;
   // Check the Incoming webhook message.
   // info on WhatsApp text message payload: https://developers.facebook.com/docs/whatsapp/cloud-api/webhooks/payload-examples#text-messages.
+  console.log("sticker sent");
   if (request.body.object) {
     if (
       request.body.entry &&
@@ -77,8 +79,8 @@ app.post("/webhook", async (request: Request, response: Response) => {
           ? undefined
           : request.body.entry[0].changes[0].value.messages[0].context.id;
       let msgID = request.body.entry[0].changes[0].value.messages[0].id;
-      // let usersWhatsappName =
-      console.log("this is the message type", messageType);
+      console.log("this is the message type", messageType, "this message");
+      console.log("first boy");
       if (messageType === "text") {
         // extract the message text from the webhook payload.
         let usersText: string =
@@ -88,10 +90,12 @@ app.post("/webhook", async (request: Request, response: Response) => {
         let userHasLocalConversation = usersConversation;
         let usersDBRecord =
           usersConversation === undefined
-            ? await userExistsInDB(phoneNumber)
+            ? await userExistsInDB(phoneNumber, "conversation")
             : usersConversation;
+        usersDBRecord !== undefined &&
+          setConversation(phoneNumber, usersDBRecord);
         //if usersDBRecord doesn't exist and users local conversation isn't available then user isnt recognized as a student
-        console.log("userDBrecord", usersDBRecord);
+        // console.log("userDBrecord", usersDBRecord);
         const usrMsgData: usersMsgData = {
           usersDBRecord: usersDBRecord,
           usrSentence: usersText,
@@ -102,6 +106,10 @@ app.post("/webhook", async (request: Request, response: Response) => {
           userHasLocalConversation: userHasLocalConversation !== undefined,
         };
         // console.log("conversations", conversationsStore);
+        console.log(
+          "this user has interacted before",
+          usersDBRecord?.interactedBefore
+        );
         if (usersDBRecord === undefined || !usersDBRecord.interactedBefore) {
           console.log("hhmm");
           const reply = await chatBot.processKeyword(
@@ -109,10 +117,7 @@ app.post("/webhook", async (request: Request, response: Response) => {
             usrMsgData
           );
           chatBot.reply(request, reply);
-        } else if (
-          usersDBRecord !== undefined &&
-          (await textIsAGreeting(usersText))
-        ) {
+        } else if (usersDBRecord !== undefined && txtIsAGreeting(usersText)) {
           if (usersDBRecord.registered.done) {
             //user is registered and confirmed by his course Rep
             const reply = await chatBot.processKeyword("help", usrMsgData);
@@ -139,7 +144,6 @@ app.post("/webhook", async (request: Request, response: Response) => {
               selectedOption,
               usrMsgData
             );
-            console.log("hey");
             chatBot.reply(request, reply);
           } else if (
             !usersDBRecord.registered.done &&
@@ -153,7 +157,7 @@ app.post("/webhook", async (request: Request, response: Response) => {
           } else {
             //user has not registered
             const reply = await chatBot.processKeyword(
-              "incompleteRegistration",
+              "incompleteRegistration", //** change this back to incomplete registration */
               usrMsgData
             );
             chatBot.reply(request, reply);
@@ -172,7 +176,7 @@ app.post("/webhook", async (request: Request, response: Response) => {
         let userHasLocalConversation = usersConversation;
         let usersDBRecord =
           usersConversation === undefined
-            ? await userExistsInDB(phoneNumber)
+            ? await userExistsInDB(phoneNumber, "conversation")
             : usersConversation;
         //if usersDBRecord doesn't exist and users local conversation isn't available then user isnt recognized as a student
         // console.log("this is the data", usersDBRecord);

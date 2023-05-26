@@ -2,13 +2,15 @@ import axios, { AxiosError, AxiosResponse } from "axios";
 import { Request } from "express";
 import { reply, listReply } from "./interfaces.js";
 import { setConversationID } from "./store.js";
+import { getDownloadURL, ref } from "firebase/storage";
+import { storage } from "./firebaseConfig.js";
 export default async function replySentenceWithText(
   request: Request,
   reply: reply
 ) {
   const token = process.env.WHATSAPP_TOKEN;
   markMessageAsRead(request);
-  // console.log("this is the token", token);
+  // le.log("this is the token", token);
   let phone_number_id =
     request.body.entry[0].changes[0].value.metadata.phone_number_id;
   let from = request.body.entry[0].changes[0].value.messages[0].from; // extract the phone number from the webhook payload
@@ -113,7 +115,7 @@ export async function replySentenceWithInteractive(
   reply: reply
 ) {
   const token = process.env.WHATSAPP_TOKEN;
-
+  console.log("this is the interactive", reply);
   markMessageAsRead(request);
   let phone_number_id =
     request.body.entry[0].changes[0].value.metadata.phone_number_id;
@@ -154,9 +156,12 @@ export async function replySentenceWithInteractive(
   })
     .then((res) => {
       response = res;
+      let msgID = response.data.messages[0].id;
+      setConversationID(from, msgID);
+      console.log("SET convo id", msgID);
     })
     .catch((e) => {
-      // console.log("this is the error oo", e);
+      console.log("this is the error oo", e.response.data.error);
     });
   return response;
 }
@@ -167,6 +172,7 @@ export async function replySentenceWithList(
 ) {
   const token = process.env.WHATSAPP_TOKEN;
   console.log("debug #5 : process entered list");
+  markMessageAsRead(request);
   let phone_number_id =
     request.body.entry[0].changes[0].value.metadata.phone_number_id;
   let from = request.body.entry[0].changes[0].value.messages[0].from;
@@ -205,14 +211,66 @@ export async function replySentenceWithList(
       setConversationID(from, msgID);
     })
     .catch((e) => {
-      console.log("this is the sendList Error");
+      console.log("this is the sendList Error", e.response.data.error);
     });
   return response;
+}
+export async function sendResult(request: Request) {
+  const token = process.env.WHATSAPP_TOKEN;
+  let phone_number_id =
+    request.body.entry[0].changes[0].value.metadata.phone_number_id;
+  let from = request.body.entry[0].changes[0].value.messages[0].from;
+  getDownloadURL(ref(storage, "Results2.pdf")).then((url) => {
+    axios({
+      method: "POST",
+      url: "https://graph.facebook.com/v15.0/" + phone_number_id + "/messages",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      data: {
+        messaging_product: "whatsapp",
+        recipient_type: "individual",
+        to: from,
+        type: "document",
+        document: {
+          link: url,
+        },
+      },
+    }).catch((e) => {
+      console.log(e.response.data);
+    });
+  });
+}
+export async function reactToMessage(request: Request, emoji: string) {
+  const token = process.env.WHATSAPP_TOKEN;
+  let from = request.body.entry[0].changes[0].value.messages[0].from;
+  let msgID = request.body.entry[0].changes[0].value.messages[0].id;
+  let phone_number_id =
+    request.body.entry[0].changes[0].value.metadata.phone_number_id;
+  let data = {
+    messaging_product: "whatsapp",
+    recipient_type: "individual",
+    to: from,
+    type: "reaction",
+    reaction: {
+      message_id: msgID,
+      emoji: emoji,
+    },
+  };
+  await axios({
+    method: "POST",
+    url: "https://graph.facebook.com/v15.0/" + phone_number_id + "/messages",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: "Bearer " + token,
+    },
+    data: data,
+  });
 }
 
 async function markMessageAsRead(request: Request) {
   const token = process.env.WHATSAPP_TOKEN;
-
   let msgID = request.body.entry[0].changes[0].value.messages[0].id;
   console.log(msgID);
   let phone_number_id =

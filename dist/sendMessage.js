@@ -9,11 +9,13 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 import axios from "axios";
 import { setConversationID } from "./store.js";
+import { getDownloadURL, ref } from "firebase/storage";
+import { storage } from "./firebaseConfig.js";
 export default function replySentenceWithText(request, reply) {
     return __awaiter(this, void 0, void 0, function* () {
         const token = process.env.WHATSAPP_TOKEN;
         markMessageAsRead(request);
-        // console.log("this is the token", token);
+        // le.log("this is the token", token);
         let phone_number_id = request.body.entry[0].changes[0].value.metadata.phone_number_id;
         let from = request.body.entry[0].changes[0].value.messages[0].from; // extract the phone number from the webhook payload
         let response;
@@ -112,6 +114,7 @@ export default function replySentenceWithText(request, reply) {
 export function replySentenceWithInteractive(request, reply) {
     return __awaiter(this, void 0, void 0, function* () {
         const token = process.env.WHATSAPP_TOKEN;
+        console.log("this is the interactive", reply);
         markMessageAsRead(request);
         let phone_number_id = request.body.entry[0].changes[0].value.metadata.phone_number_id;
         let from = request.body.entry[0].changes[0].value.messages[0].from;
@@ -151,9 +154,12 @@ export function replySentenceWithInteractive(request, reply) {
         })
             .then((res) => {
             response = res;
+            let msgID = response.data.messages[0].id;
+            setConversationID(from, msgID);
+            console.log("SET convo id", msgID);
         })
             .catch((e) => {
-            // console.log("this is the error oo", e);
+            console.log("this is the error oo", e.response.data.error);
         });
         return response;
     });
@@ -162,6 +168,7 @@ export function replySentenceWithList(request, listReply) {
     return __awaiter(this, void 0, void 0, function* () {
         const token = process.env.WHATSAPP_TOKEN;
         console.log("debug #5 : process entered list");
+        markMessageAsRead(request);
         let phone_number_id = request.body.entry[0].changes[0].value.metadata.phone_number_id;
         let from = request.body.entry[0].changes[0].value.messages[0].from;
         let response = "";
@@ -199,9 +206,64 @@ export function replySentenceWithList(request, listReply) {
             setConversationID(from, msgID);
         })
             .catch((e) => {
-            console.log("this is the sendList Error");
+            console.log("this is the sendList Error", e.response.data.error);
         });
         return response;
+    });
+}
+export function sendResult(request) {
+    return __awaiter(this, void 0, void 0, function* () {
+        const token = process.env.WHATSAPP_TOKEN;
+        let phone_number_id = request.body.entry[0].changes[0].value.metadata.phone_number_id;
+        let from = request.body.entry[0].changes[0].value.messages[0].from;
+        getDownloadURL(ref(storage, "Results2.pdf")).then((url) => {
+            axios({
+                method: "POST",
+                url: "https://graph.facebook.com/v15.0/" + phone_number_id + "/messages",
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${token}`,
+                },
+                data: {
+                    messaging_product: "whatsapp",
+                    recipient_type: "individual",
+                    to: from,
+                    type: "document",
+                    document: {
+                        link: url,
+                    },
+                },
+            }).catch((e) => {
+                console.log(e.response.data);
+            });
+        });
+    });
+}
+export function reactToMessage(request, emoji) {
+    return __awaiter(this, void 0, void 0, function* () {
+        const token = process.env.WHATSAPP_TOKEN;
+        let from = request.body.entry[0].changes[0].value.messages[0].from;
+        let msgID = request.body.entry[0].changes[0].value.messages[0].id;
+        let phone_number_id = request.body.entry[0].changes[0].value.metadata.phone_number_id;
+        let data = {
+            messaging_product: "whatsapp",
+            recipient_type: "individual",
+            to: from,
+            type: "reaction",
+            reaction: {
+                message_id: msgID,
+                emoji: emoji,
+            },
+        };
+        yield axios({
+            method: "POST",
+            url: "https://graph.facebook.com/v15.0/" + phone_number_id + "/messages",
+            headers: {
+                "Content-Type": "application/json",
+                Authorization: "Bearer " + token,
+            },
+            data: data,
+        });
     });
 }
 function markMessageAsRead(request) {

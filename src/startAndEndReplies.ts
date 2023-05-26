@@ -78,7 +78,25 @@ export const startAndEndReplies = {
     let option2 = "No ❌";
     if (userProfile) {
       reply = {
-        message: "I found your details \n",
+        message: [
+          `Great! \n I just found your details \n Last Name: *${userProfile.lastName}*\n First Name: *${userProfile.firstName}*\n Dept: *${userProfile.studentInfo.dept}*`,
+          {
+            message: "Am I correct ?",
+            typeOfReply: "interactive",
+            options: {
+              firstButton: {
+                typeOfReply: "interactive",
+                message: option1,
+                id: "23",
+              },
+              secondButton: {
+                typeOfReply: "interactive",
+                message: option2,
+                id: "24",
+              },
+            },
+          },
+        ],
         contextId: usersMsgData.usrSentenceID,
       };
       lastBotSentence = {
@@ -177,6 +195,7 @@ export const startAndEndReplies = {
     updateUserDetailInConversation(usersMsgData.usrPhoneNumber, {
       dept: deptName,
       courseRep: courseRepsName,
+      level: departmentInfo.level,
     });
 
     addLastSentenceToConversation(usersMsgData.usrPhoneNumber, lastBotSentence);
@@ -257,7 +276,7 @@ export const startAndEndReplies = {
     ) {
       reply = {
         contextId: usersMsgData.usrSentenceID,
-        message: `You haven't been confirmed by ${usersMsgData.usersDBRecord.userDetails.courseRep} \n as a member of ${usersMsgData.usersDBRecord.userDetails.dept} \n ${usersMsgData.usersWhatsappName} please be patient ⏳`,
+        message: `You haven't been confirmed by ${usersMsgData.usersDBRecord.studentInfo.courseRep} \n as a member of ${usersMsgData.usersDBRecord.studentInfo.dept} \n ${usersMsgData.usersWhatsappName} please be patient ⏳`,
       };
       lastBotSentence = {
         msgId: "",
@@ -297,7 +316,7 @@ export const startAndEndReplies = {
         [option4]: "schoolInformation",
         [option5]: "takeAttendance",
         [option6]: "attendanceRecord",
-        [option7]: "getResult",
+        [option7]: "getResultActionList",
         [option8]: "getCourseMaterial",
       },
     };
@@ -363,7 +382,7 @@ export const startAndEndReplies = {
             ],
           },
           {
-            title: "ACADEMIC STUFF",
+            title: "ACADEMIC STUFF 📚",
             rows: [
               {
                 title: "My Result",

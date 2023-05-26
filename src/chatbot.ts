@@ -7,14 +7,16 @@ import {
   usersMsgData,
   listReply,
 } from "./interfaces.js";
+// import { testReplies } from "./testReplies.js";
+import { webscraperReplies } from "./webscraperReplies.js";
 import { noExistuserReplies } from "./noExistUser.js";
-import { paymentReplies } from "./paymentReplies.js";
-import { adminReplies } from "./adminReplies.js";
 import { startAndEndReplies } from "./startAndEndReplies.js";
 // import { Replies } from "./types.js";
 import replySentenceWithText, {
+  reactToMessage,
   replySentenceWithInteractive,
   replySentenceWithList,
+  sendResult,
 } from "./sendMessage.js";
 import { Request } from "express";
 export default class ChatBot {
@@ -26,9 +28,10 @@ export default class ChatBot {
   constructor() {
     this.chatBotFunctions = {
       //add the replies of different categories
-      ...paymentReplies,
       ...noExistuserReplies,
       ...startAndEndReplies,
+      ...webscraperReplies,
+      // ...testReplies,
       // ...adminReplies,
     };
   }
@@ -47,7 +50,9 @@ export default class ChatBot {
     if (message === undefined || reply === undefined) {
       //check if the users message contains certain keywords
       let noReply: reply = {
-        message: ["I don't quite understand what you want me to do"],
+        message: [
+          `I don't understand what you mean by *"${usrsMessage.usrSentence}"* , \n in a future upgrade i may be capable of doing that, but right now I can't 😓.`,
+        ],
       };
       return [noReply];
     } else {
@@ -60,7 +65,30 @@ export default class ChatBot {
       await replySentenceWithText(request, replies[0]);
       await replySentenceWithList(request, replies[1]);
     } else {
-      await replySentenceWithText(request, replies[0]);
+      if (
+        replies[0].typeOfReply !== undefined &&
+        replies[0].typeOfReply === "list"
+      ) {
+        await replySentenceWithList(request, replies[0]);
+      } else if (
+        replies[0].typeOfReply !== undefined &&
+        replies[0].typeOfReply === "reaction"
+      ) {
+        await reactToMessage(request, "💯");
+      } else if (
+        replies[0].typeOfReply !== undefined &&
+        replies[0].typeOfReply === "interactive"
+      ) {
+        await replySentenceWithInteractive(request, replies[0].message[0]);
+      } else if (
+        replies[0].typeOfReply !== undefined &&
+        replies[0].typeOfReply === "document"
+      ) {
+        await replySentenceWithText(request, replies[0]);
+        sendResult(request);
+      } else {
+        await replySentenceWithText(request, replies[0]);
+      }
     }
   };
   selectedOption = (
@@ -73,12 +101,6 @@ export default class ChatBot {
       let previousSentences = conversation.previousSentences;
       let sentenceUserReplied: sentenceInterface | undefined;
       let selectedOption: string | undefined;
-      console.log("the context", usersMsgData.sentenceUsrIsReplyingID);
-      console.log("previous sentenceID", previousSentences);
-      // console.log(
-      //   "current sentenceReplyID",
-      //   usersMsgData.sentenceUsrIsReplyingID
-      // );
       previousSentences?.forEach((sentence: sentenceInterface) => {
         sentence.msgId === usersMsgData.sentenceUsrIsReplyingID &&
           (sentenceUserReplied = sentence);

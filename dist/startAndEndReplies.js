@@ -124,6 +124,7 @@ export const startAndEndReplies = {
         //there is no level like that
         let courseRepsName = "Benjamin";
         let deptName = "CSC";
+        console.log("samson", "john");
         let option1 = "Yes ✅";
         let option2 = "No ❌";
         let reply;

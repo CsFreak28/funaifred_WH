@@ -2,7 +2,6 @@ import express, { Express, Request, Response } from "express";
 import dotenv from "dotenv";
 import { userExistsInDB } from "./db.js";
 import { getResult } from "./webscraperFunctions.js";
-import axios from "axios";
 import { txtIsAGreeting } from "./chatGpt.js";
 import { storage } from "./firebaseConfig.js";
 import { getDownloadURL, ref } from "firebase/storage";
